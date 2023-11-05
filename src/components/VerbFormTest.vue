@@ -23,7 +23,7 @@ import { defineComponent } from 'vue';
 
 export default defineComponent({
   name: 'VerbFormTest',
-  data() {
+  data: () => {
     return {
       isRight: false,
       isWrong: false
