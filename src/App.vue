@@ -1,22 +1,27 @@
 <template>
-  <div class="container">
-    <div class="d-flex flex-column align-items-center" v-if="inMenu">
-      <b-button @click="openVerbTable" variant="primary" class="mb-3">Biti verb forms table</b-button>
-      <b-button @click="openVerbTest" variant="danger" class="mb-3">Biti verb forms test</b-button>
-      <b-button @click="openInvertVerbTest" variant="danger">Biti verb forms test (invert)</b-button>
+  <div class="wrapper">
+    <div class="container content">
+      <div class="d-flex flex-column align-items-center" v-if="inMenu">
+        <b-button @click="openVerbTable" variant="primary" class="mb-3">Biti verb forms table</b-button>
+        <b-button @click="openVerbTest" variant="danger" class="mb-3">Biti verb forms test</b-button>
+        <b-button @click="openInvertVerbTest" variant="danger">Biti verb forms test (invert)</b-button>
+      </div>
+      <div v-if="inVerbFormTable" class="d-flex flex-column align-items-center">
+        <b-button @click="backToMenu" variant="secondary" class="mb-3">Back</b-button>
+        <VerbFormTable />
+      </div>
+      <div v-if="inVerbFormTest" class="d-flex flex-column align-items-center">
+        <b-button @click="backToMenu" variant="secondary" class="mb-3">Back</b-button>
+        <TestForm :mapping="verbFormMapping" />
+      </div>
+      <div v-if="inInvertVerbFormTest" class="d-flex flex-column align-items-center">
+        <b-button @click="backToMenu" variant="secondary" class="mb-3">Back</b-button>
+        <TestForm :mapping="invertVerbFormMapping" />
+      </div>
     </div>
-    <div v-if="inVerbFormTable" class="d-flex flex-column align-items-center">
-      <b-button @click="backToMenu" variant="secondary" class="mb-3">Back</b-button>
-      <VerbFormTable />
-    </div>
-    <div v-if="inVerbFormTest" class="d-flex flex-column align-items-center">
-      <b-button @click="backToMenu" variant="secondary" class="mb-3">Back</b-button>
-      <TestForm :mapping="verbFormMapping" />
-    </div>
-    <div v-if="inInvertVerbFormTest" class="d-flex flex-column align-items-center">
-      <b-button @click="backToMenu" variant="secondary" class="mb-3">Back</b-button>
-      <TestForm :mapping="invertVerbFormMapping" />
-    </div>
+    <footer class="footer">
+      Version: 0.2
+    </footer>
   </div>
 </template>
 
@@ -27,17 +32,37 @@ import TestForm from './components/TestForm.vue';
 
 type State = 'menu' | 'verb-form-table' | 'verb-form-test' | 'invert-verb-form-test';
 
-const bitiForms: Record<string, string> = {
-  'ja': 'sam',
-  'ti': 'si',
-  'on': 'je',
-  'ona (ed)': 'je',
-  'ono': 'je',
-  'mi': 'smo',
-  'vi': 'ste',
-  'oni': 'su',
-  'one': 'su',
-  'ona (mn)': 'su'
+const bitiForms: Record<string, string[]> = {
+  'ja': [
+    'sam'
+  ],
+  'ti': [
+    'si'
+  ],
+  'on': [
+    'je'
+  ],
+  'ona (ed)': [
+    'je'
+  ],
+  'ono': [
+    'je'
+  ],
+  'mi': [
+    'smo'
+  ],
+  'vi': [
+    'ste'
+  ],
+  'oni': [
+    'su'
+  ],
+  'one': [
+    'su'
+  ],
+  'ona (mn)': [
+    'su'
+  ]
 };
 
 export default defineComponent({
@@ -69,9 +94,14 @@ export default defineComponent({
     },
 
     invertVerbFormMapping() {
-      const invertMapping: Record<string, string> = {};
-      for (const [key, value] of Object.entries(bitiForms)) {
-        invertMapping[value] = key;
+      const invertMapping: Record<string, string[]> = {};
+      for (const [key, values] of Object.entries(bitiForms)) {
+        values.forEach(value => {
+          if (!invertMapping[value]) {
+            invertMapping[value] = [];
+          }
+          invertMapping[value].push(key);
+        });
       }
       return invertMapping;
     }
@@ -107,5 +137,21 @@ export default defineComponent({
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.content {
+  flex: 1;
+}
+
+.footer {
+  width: 100%;
+  padding: 10px;
+  text-align: center;
 }
 </style>

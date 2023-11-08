@@ -42,7 +42,7 @@ export default defineComponent({
   name: 'TestForm',
   props: {
     mapping: {
-      type: Object as () => Record<string, string>,
+      type: Object as () => Record<string, string[]>,
       required: true
     }
   },
@@ -60,8 +60,8 @@ export default defineComponent({
         return;
       }
       
-      const correctAnswer = this.mapping[this.question];
-      const isCorrect = this.answers[index] === correctAnswer;
+      const correctAnswers = this.mapping[this.question];
+      const isCorrect = correctAnswers.includes(this.answers[index]);
       const target = e.currentTarget as HTMLElement;
       if (target == null) {
         return;
@@ -100,11 +100,12 @@ export default defineComponent({
         questions = questions.filter(question => question !== this.question);
       }
       this.question = questions[Math.floor(Math.random() * questions.length)];
-      const correctAnswer = this.mapping[this.question];
-      let allAnswers = [...new Set(Object.values(this.mapping))];
-      let incorrectAnswers = allAnswers.filter(answer => answer !== correctAnswer);
-      incorrectAnswers = this.shuffleArray(incorrectAnswers);
-      incorrectAnswers = incorrectAnswers.slice(0, 3);
+      const correctAnswers = this.mapping[this.question];
+      const correctAnswer = correctAnswers[Math.floor(Math.random() * correctAnswers.length)];
+      let allAnswers: string[] = Object.values(this.mapping).flat();
+      let incorrectAnswers = allAnswers.filter(answer => !correctAnswers.includes(answer));
+      incorrectAnswers = Array.from(new Set(incorrectAnswers));
+      incorrectAnswers = this.shuffleArray(incorrectAnswers).slice(0, 3);
       this.answers = this.shuffleArray([correctAnswer, ...incorrectAnswers]);
     },
     
