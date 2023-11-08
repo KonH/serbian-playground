@@ -2,7 +2,8 @@
   <div class="container">
     <div class="d-flex flex-column align-items-center" v-if="inMenu">
       <b-button @click="openVerbTable" variant="primary" class="mb-3">Biti verb forms table</b-button>
-      <b-button @click="openVerbTest" variant="danger">Biti verb forms test</b-button>
+      <b-button @click="openVerbTest" variant="danger" class="mb-3">Biti verb forms test</b-button>
+      <b-button @click="openInvertVerbTest" variant="danger">Biti verb forms test (invert)</b-button>
     </div>
     <div v-if="inVerbFormTable" class="d-flex flex-column align-items-center">
       <b-button @click="backToMenu" variant="secondary" class="mb-3">Back</b-button>
@@ -10,7 +11,11 @@
     </div>
     <div v-if="inVerbFormTest" class="d-flex flex-column align-items-center">
       <b-button @click="backToMenu" variant="secondary" class="mb-3">Back</b-button>
-      <VerbFormTest />
+      <TestForm :mapping="verbFormMapping" />
+    </div>
+    <div v-if="inInvertVerbFormTest" class="d-flex flex-column align-items-center">
+      <b-button @click="backToMenu" variant="secondary" class="mb-3">Back</b-button>
+      <TestForm :mapping="invertVerbFormMapping" />
     </div>
   </div>
 </template>
@@ -18,9 +23,22 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import VerbFormTable from './components/VerbFormTable.vue';
-import VerbFormTest from './components/VerbFormTest.vue';
+import TestForm from './components/TestForm.vue';
 
-type State = 'menu' | 'verb-form-table' | 'verb-form-test';
+type State = 'menu' | 'verb-form-table' | 'verb-form-test' | 'invert-verb-form-test';
+
+const bitiForms: Record<string, string> = {
+  'ja': 'sam',
+  'ti': 'si',
+  'on': 'je',
+  'ona (ed)': 'je',
+  'ono': 'je',
+  'mi': 'smo',
+  'vi': 'ste',
+  'oni': 'su',
+  'one': 'su',
+  'ona (mn)': 'su'
+};
 
 export default defineComponent({
   name: 'App',
@@ -40,6 +58,22 @@ export default defineComponent({
 
     inVerbFormTest() {
       return this.state == 'verb-form-test';
+    },
+
+    inInvertVerbFormTest() {
+      return this.state == 'invert-verb-form-test';
+    },
+
+    verbFormMapping() {
+      return bitiForms;
+    },
+
+    invertVerbFormMapping() {
+      const invertMapping: Record<string, string> = {};
+      for (const [key, value] of Object.entries(bitiForms)) {
+        invertMapping[value] = key;
+      }
+      return invertMapping;
     }
   },
   methods: {
@@ -50,13 +84,17 @@ export default defineComponent({
     openVerbTest() {
       this.state = 'verb-form-test';
     },
+
+    openInvertVerbTest() {
+      this.state = 'invert-verb-form-test';
+    },
     
     backToMenu() {
       this.state = 'menu';
     }
   },
   components: {
-    VerbFormTable, VerbFormTest
+    VerbFormTable, TestForm
   }
 });
 </script>
