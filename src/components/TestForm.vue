@@ -8,24 +8,24 @@
   <tbody>
     <tr>
       <td class="column-width">
-        <b-button variant="info" @click="e => checkAnswer(e, 0)">
+        <b-button variant="info" @click="e => checkAnswer(e, 0)" v-if="answers.length > 0">
           {{ answers[0] }}
         </b-button>
       </td>
       <td class="column-width">
-        <b-button variant="info" @click="e => checkAnswer(e, 1)">
+        <b-button variant="info" @click="e => checkAnswer(e, 1)" v-if="answers.length > 1">
           {{ answers[1] }}
         </b-button>
       </td>
     </tr>
     <tr>
       <td class="column-width">
-        <b-button variant="info" @click="e => checkAnswer(e, 2)">
+        <b-button variant="info" @click="e => checkAnswer(e, 2)" v-if="answers.length > 2">
           {{ answers[2] }}
         </b-button>
       </td>
       <td class="column-width">
-        <b-button variant="info" @click="e => checkAnswer(e, 3)">
+        <b-button variant="info" @click="e => checkAnswer(e, 3)" v-if="answers.length > 3">
           {{ answers[3] }}
         </b-button>
       </td>
@@ -42,7 +42,7 @@ export default defineComponent({
   name: 'TestForm',
   props: {
     mapping: {
-      type: Object as () => Record<string, string[]>,
+      type: Object as () => Record<string, Record<string, boolean>>,
       required: true
     }
   },
@@ -59,9 +59,10 @@ export default defineComponent({
       if (this.animating) {
         return;
       }
-      
+
+      const selectedAnswer = this.answers[index];
       const correctAnswers = this.mapping[this.question];
-      const isCorrect = correctAnswers.includes(this.answers[index]);
+      const isCorrect = correctAnswers[selectedAnswer];
       const target = e.currentTarget as HTMLElement;
       if (target == null) {
         return;
@@ -100,11 +101,10 @@ export default defineComponent({
         questions = questions.filter(question => question !== this.question);
       }
       this.question = questions[Math.floor(Math.random() * questions.length)];
-      const correctAnswers = this.mapping[this.question];
-      const correctAnswer = correctAnswers[Math.floor(Math.random() * correctAnswers.length)];
-      let allAnswers: string[] = Object.values(this.mapping).flat();
-      let incorrectAnswers = allAnswers.filter(answer => !correctAnswers.includes(answer));
-      incorrectAnswers = Array.from(new Set(incorrectAnswers));
+      const answerRecords = this.mapping[this.question];
+      const answerKeys = Object.keys(answerRecords);
+      const correctAnswer = answerKeys.find(key => answerRecords[key]) ?? '';
+      let incorrectAnswers = answerKeys.filter(key => !answerRecords[key]);
       incorrectAnswers = this.shuffleArray(incorrectAnswers).slice(0, 3);
       this.answers = this.shuffleArray([correctAnswer, ...incorrectAnswers]);
     },
