@@ -27,8 +27,11 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import Papa from 'papaparse';
 import VerbFormTable from './components/VerbFormTable.vue';
 import TestForm from './components/TestForm.vue';
+
+import nounsCsv from '!!raw-loader!./assets/nouns.csv';
 
 type State = 'menu' | 'verb-form-table' | 'verb-form-test' | 'invert-verb-form-test';
 
@@ -64,6 +67,26 @@ const bitiForms: Record<string, string[]> = {
     'su'
   ]
 };
+
+type CsvRow = string[];
+
+type ParseResult = {
+  data: CsvRow[];
+};
+
+const nouns: Record<string, string> = {};
+
+Papa.parse(nounsCsv, {
+  download: false,
+  header: false,
+  complete: (results: ParseResult) => {
+    results.data.forEach(row => {
+      const word = row[0];
+      const gender = row[1].trim();
+      nouns[word] = gender;
+    });
+  }
+});
 
 export default defineComponent({
   name: 'App',
