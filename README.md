@@ -1,5 +1,7 @@
 # serbian-playground
 
+Web playground for Serbian language learning
+
 ## Online
 
 https://konh.github.io/custom/serbian-playground/
