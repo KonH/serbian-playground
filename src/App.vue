@@ -48,7 +48,7 @@ import PluralFormTable from './components/PluralFormTable.vue';
 import nounsCsv from '!!raw-loader!./assets/nouns.csv';
 import { NounDef, createNounMapping } from './logic/pluralFormUtils';
 
-const version = '0.3';
+const version = '0.4';
 
 type State = 
   'menu' |
