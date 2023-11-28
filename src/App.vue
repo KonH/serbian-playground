@@ -40,15 +40,13 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import Papa from 'papaparse';
 import VerbFormTable from './components/VerbFormTable.vue';
 import TestForm from './components/TestForm.vue';
 import PluralFormTable from './components/PluralFormTable.vue';
-
+import { NounDef, loadNouns, createNounMapping } from './logic/pluralFormUtils';
 import nounsCsv from '!!raw-loader!./assets/nouns.csv';
-import { NounDef, createNounMapping } from './logic/pluralFormUtils';
 
-const version = '0.4';
+const version = '0.5';
 
 type State = 
   'menu' |
@@ -71,41 +69,8 @@ const bitiForms: Record<string, string> = {
   'ona (mn)': 'su'
 };
 
-type CsvRow = string[];
-
-type ParseResult = {
-  data: CsvRow[];
-};
-
 const nouns: NounDef[] = [];
-
-function ensureGender(input: string) {
-  const readyStr = input.trim().toLowerCase();
-  if (readyStr == 'm' || readyStr == 'f' || readyStr == 'n') {
-    return readyStr;
-  }
-  return null;
-}
-
-Papa.parse(nounsCsv, {
-  download: false,
-  header: false,
-  complete: (results: ParseResult) => {
-    results.data.forEach(row => {
-      const word = row[0];
-      const gender = ensureGender(row[1]);
-      if ( gender == null ) {
-        return;
-      }
-      const readyGender = gender as 'm' | 'f' | 'n';
-      const def = {
-        word: word,
-        gender: readyGender
-      };
-      nouns.push(def);
-    });
-  }
-});
+loadNouns(nounsCsv, nouns);
 
 export default defineComponent({
   name: 'App',
