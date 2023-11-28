@@ -46,15 +46,38 @@ function ensureGender(input: string) {
 
 export const createNounMapping = (nouns: NounDef[]): Record<string, Record<string, boolean>> => {
     const result: Record<string, Record<string, boolean>> = {};
+    const pluralFormTransforms = {
+        endsWithE: (w: string) => w.slice(0, -1) + 'e',
+        endsWithA: (w: string) => w.slice(0, -1) + 'a'
+    };
+
+    function applyTransform(container: Record<string, boolean>, w: string, wordTransform: (w: string) => string) {
+        const transformedValue = wordTransform(w);
+        container[transformedValue] = false;
+    }
+
+    function applyAllFormTransforms(container: Record<string, boolean>, w: string) {
+        applyTransform(container, w, pluralFormTransforms.endsWithE);
+        applyTransform(container, w, pluralFormTransforms.endsWithA);
+    }
+    
     for (const noun of nouns) {
+        const container: Record<string, boolean> = {};
         if (noun.gender == 'f') {
-            result[noun.word] = {};
+            applyAllFormTransforms(container, noun.word);
             if (noun.plural_exception) {
-                result[noun.word][noun.plural_exception] = true;   
+                container[noun.plural_exception] = true;   
             } else {
-                const pluralForm = noun.word.slice(0, -1) + 'e';
-                result[noun.word][pluralForm] = true;
+                const correctPluralForm = pluralFormTransforms.endsWithE(noun.word);
+                container[correctPluralForm] = true;
             }
+            result[noun.word] = container;
+        }
+        if (noun.gender == 'n') {
+            applyAllFormTransforms(container, noun.word);
+            const correctPluralForm = pluralFormTransforms.endsWithA(noun.word);
+            container[correctPluralForm] = true;
+            result[noun.word] = container;
         }
     }
     return result;

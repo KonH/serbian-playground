@@ -27,7 +27,7 @@
                     slovo
                 </td>
                 <td>
-                    slov<label class="form-highlight">a</label> (TODO)
+                    slov<label class="form-highlight">a</label>
                 </td>
             </tr>
             <tr>
