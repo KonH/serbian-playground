@@ -162,7 +162,7 @@
                     dan
                 </td>
                 <td>
-                    dan<label class="form-highlight">i</label> (TODO)
+                    dan<label class="form-highlight">i</label>
                 </td>
             </tr>
             <tr>
@@ -178,7 +178,7 @@
                     turista
                 </td>
                 <td>
-                    turist<label class="form-highlight">i</label> (TODO)
+                    turist<label class="form-highlight">i</label>
                 </td>
             </tr>
         </tbody>

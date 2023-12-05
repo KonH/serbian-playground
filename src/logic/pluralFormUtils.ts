@@ -57,7 +57,7 @@ function skipLastVowel(w: string): string {
 export const createNounMapping = (nouns: NounDef[]): Record<string, Record<string, boolean>> => {
     const result: Record<string, Record<string, boolean>> = {};
     const pluralFormTransforms = {
-        endsWithI: (w: string) => w + 'i',
+        endsWithI_NoVowelEnding: (w: string) => skipLastVowel(w) + 'i',
         endsWithNa: (w: string) => w + 'na',
         endsWithE_NoVowelEnding: (w: string) => skipLastVowel(w) + 'e',
         endsWithA_NoVowelEnding: (w: string) => skipLastVowel(w) + 'a'
@@ -69,7 +69,7 @@ export const createNounMapping = (nouns: NounDef[]): Record<string, Record<strin
     }
 
     function applyAllFormTransforms(container: Record<string, boolean>, w: string) {
-        applyTransform(container, w, pluralFormTransforms.endsWithI);   
+        applyTransform(container, w, pluralFormTransforms.endsWithI_NoVowelEnding);   
         applyTransform(container, w, pluralFormTransforms.endsWithNa);    
         applyTransform(container, w, pluralFormTransforms.endsWithE_NoVowelEnding);
         applyTransform(container, w, pluralFormTransforms.endsWithA_NoVowelEnding);
@@ -80,7 +80,7 @@ export const createNounMapping = (nouns: NounDef[]): Record<string, Record<strin
             return noun.plural_exception;
         } else {
             switch (noun.gender) {
-                case 'm': return pluralFormTransforms.endsWithI(noun.word);
+                case 'm': return pluralFormTransforms.endsWithI_NoVowelEnding(noun.word);
                 case 'f': return pluralFormTransforms.endsWithE_NoVowelEnding(noun.word);
                 case 'n': {
                     if (noun.word.endsWith('e')) {

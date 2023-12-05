@@ -35,6 +35,28 @@ describe('createNounMapping', () => {
         const result = createNounMapping(nouns);
         expectIncorrectPlural(result, 'student', 'studenta');
     });
+
+    it('dan - dani', () => {
+        const nouns = loadLocalNouns();
+        const result = createNounMapping(nouns);
+        expectCorrectPlural(result, 'dan', 'dani');
+    });
+    it('dan - ...', () => {
+        const nouns = loadLocalNouns();
+        const result = createNounMapping(nouns);
+        expectIncorrectPlural(result, 'dan', 'dane');
+    });
+
+    it('turista - turisti', () => {
+        const nouns = loadLocalNouns();
+        const result = createNounMapping(nouns);
+        expectCorrectPlural(result, 'turista', 'turisti');
+    });
+    it('turista - ...', () => {
+        const nouns = loadLocalNouns();
+        const result = createNounMapping(nouns);
+        expectIncorrectPlural(result, 'turista', 'turiste');
+    });
     
     it('ulica - ulice', () => {
         const nouns = loadLocalNouns();
