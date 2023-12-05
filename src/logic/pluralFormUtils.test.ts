@@ -58,6 +58,17 @@ describe('createNounMapping', () => {
         expectIncorrectPlural(result, 'dan', 'dane');
     });
 
+    it('komšija - komšije', () => {
+        const nouns = loadLocalNouns();
+        const result = createNounMapping(nouns);
+        expectCorrectPlural(result, 'komšija', 'komšije');
+    });
+    it('komšija - ...', () => {
+        const nouns = loadLocalNouns();
+        const result = createNounMapping(nouns);
+        expectIncorrectPlural(result, 'komšija', 'komšiji');
+    });
+
     it('turista - turisti', () => {
         const nouns = loadLocalNouns();
         const result = createNounMapping(nouns);

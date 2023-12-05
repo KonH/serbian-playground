@@ -170,7 +170,7 @@
                     komšija
                 </td>
                 <td>
-                    komšij<label class="form-highlight">e</label> (TODO)
+                    komšij<label class="form-highlight">e</label>
                 </td>
             </tr>
             <tr>
