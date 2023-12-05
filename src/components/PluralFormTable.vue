@@ -13,7 +13,7 @@
                     student
                 </td>
                 <td>
-                    student<label class="form-highlight">i</label> (TODO)
+                    student<label class="form-highlight">i</label>
                 </td>
                 
                 <td>

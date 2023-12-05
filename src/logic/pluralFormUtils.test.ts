@@ -25,6 +25,11 @@ function expectIncorrectPlural(result: Record<string, Record<string, boolean>>, 
 }
 
 describe('createNounMapping', () => {
+    it('student - studenti', () => {
+        const nouns = loadLocalNouns();
+        const result = createNounMapping(nouns);
+        expectCorrectPlural(result, 'student', 'studenti');
+    });
     it('ulica - ulice', () => {
         const nouns = loadLocalNouns();
         const result = createNounMapping(nouns);
