@@ -36,6 +36,17 @@ describe('createNounMapping', () => {
         expectIncorrectPlural(result, 'student', 'studenta');
     });
 
+    it('stranac - stranci', () => {
+        const nouns = loadLocalNouns();
+        const result = createNounMapping(nouns);
+        expectCorrectPlural(result, 'stranac', 'stranci');
+    });
+    it('stranac - ...', () => {
+        const nouns = loadLocalNouns();
+        const result = createNounMapping(nouns);
+        expectIncorrectPlural(result, 'stranac', 'stranaci');
+    });
+
     it('dan - dani', () => {
         const nouns = loadLocalNouns();
         const result = createNounMapping(nouns);

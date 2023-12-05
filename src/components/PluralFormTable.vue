@@ -35,7 +35,7 @@
                     stran<label class="form-highlight">a</label>c
                 </td>
                 <td>
-                    stran<label class="form-highlight">ci</label> (TODO)
+                    stran<label class="form-highlight">ci</label>
                 </td>
                 
                 <td>
