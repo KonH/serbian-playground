@@ -49,7 +49,7 @@
                     ime
                 </td>
                 <td>
-                    im<label class="form-highlight">ena</label> (TODO)
+                    im<label class="form-highlight">ena</label>
                 </td>
             </tr>
             <tr>
@@ -66,7 +66,7 @@
                     prezime
                 </td>
                 <td>
-                    prezim<label class="form-highlight">ena</label> (TODO)
+                    prezim<label class="form-highlight">ena</label>
                 </td>
             </tr>
             <tr>

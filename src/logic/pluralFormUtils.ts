@@ -44,12 +44,23 @@ function ensureGender(input: string) {
     return null;
 }
 
+function skipLastVowel(w: string): string {
+    const vowels = ['a', 'e', 'i', 'o', 'u'];
+    const lastChar = w[w.length - 1];
+    if (vowels.includes(lastChar)) {
+        return w.slice(0, w.length - 1);
+    } else {
+        return w;
+    }
+}
+
 export const createNounMapping = (nouns: NounDef[]): Record<string, Record<string, boolean>> => {
     const result: Record<string, Record<string, boolean>> = {};
     const pluralFormTransforms = {
         endsWithI: (w: string) => w + 'i',
-        endsWithE_NoEnding: (w: string) => w.slice(0, -1) + 'e',
-        endsWithA_NoEnding: (w: string) => w.slice(0, -1) + 'a'
+        endsWithNa: (w: string) => w + 'na',
+        endsWithE_NoVowelEnding: (w: string) => skipLastVowel(w) + 'e',
+        endsWithA_NoVowelEnding: (w: string) => skipLastVowel(w) + 'a'
     };
 
     function applyTransform(container: Record<string, boolean>, w: string, wordTransform: (w: string) => string) {
@@ -58,9 +69,10 @@ export const createNounMapping = (nouns: NounDef[]): Record<string, Record<strin
     }
 
     function applyAllFormTransforms(container: Record<string, boolean>, w: string) {
-        applyTransform(container, w, pluralFormTransforms.endsWithI);       
-        applyTransform(container, w, pluralFormTransforms.endsWithE_NoEnding);
-        applyTransform(container, w, pluralFormTransforms.endsWithA_NoEnding);
+        applyTransform(container, w, pluralFormTransforms.endsWithI);   
+        applyTransform(container, w, pluralFormTransforms.endsWithNa);    
+        applyTransform(container, w, pluralFormTransforms.endsWithE_NoVowelEnding);
+        applyTransform(container, w, pluralFormTransforms.endsWithA_NoVowelEnding);
     }
 
     function getCorrectPluralForm(noun: NounDef): string {
@@ -69,8 +81,13 @@ export const createNounMapping = (nouns: NounDef[]): Record<string, Record<strin
         } else {
             switch (noun.gender) {
                 case 'm': return pluralFormTransforms.endsWithI(noun.word);
-                case 'f': return pluralFormTransforms.endsWithE_NoEnding(noun.word);
-                case 'n': return pluralFormTransforms.endsWithA_NoEnding(noun.word);
+                case 'f': return pluralFormTransforms.endsWithE_NoVowelEnding(noun.word);
+                case 'n': {
+                    if (noun.word.endsWith('e')) {
+                        return pluralFormTransforms.endsWithNa(noun.word);
+                    }
+                    return pluralFormTransforms.endsWithA_NoVowelEnding(noun.word);
+                }
             }
         }
     }

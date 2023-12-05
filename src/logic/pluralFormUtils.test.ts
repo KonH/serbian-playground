@@ -30,6 +30,12 @@ describe('createNounMapping', () => {
         const result = createNounMapping(nouns);
         expectCorrectPlural(result, 'student', 'studenti');
     });
+    it('student - ...', () => {
+        const nouns = loadLocalNouns();
+        const result = createNounMapping(nouns);
+        expectIncorrectPlural(result, 'student', 'studenta');
+    });
+    
     it('ulica - ulice', () => {
         const nouns = loadLocalNouns();
         const result = createNounMapping(nouns);
@@ -40,10 +46,16 @@ describe('createNounMapping', () => {
         const result = createNounMapping(nouns);
         expectIncorrectPlural(result, 'ulica', 'ulica');
     });
+    
     it('stvar - stvari', () => {
         const nouns = loadLocalNouns();
         const result = createNounMapping(nouns);
         expectCorrectPlural(result, 'stvar', 'stvari');
+    });
+    it('stvar - stvari', () => {
+        const nouns = loadLocalNouns();
+        const result = createNounMapping(nouns);
+        expectIncorrectPlural(result, 'stvar', 'stvare');
     });
 
     it('slovo - slova', () => {
@@ -55,5 +67,16 @@ describe('createNounMapping', () => {
         const nouns = loadLocalNouns();
         const result = createNounMapping(nouns);
         expectIncorrectPlural(result, 'slovo', 'slove');
+    });
+
+    it('ime - imena', () => {
+        const nouns = loadLocalNouns();
+        const result = createNounMapping(nouns);
+        expectCorrectPlural(result, 'ime', 'imena');
+    });
+    it('ime - ...', () => {
+        const nouns = loadLocalNouns();
+        const result = createNounMapping(nouns);
+        expectIncorrectPlural(result, 'ime', 'ime');
     });
 });
