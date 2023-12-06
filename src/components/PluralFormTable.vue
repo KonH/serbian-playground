@@ -57,7 +57,7 @@
                     učeni<label class="form-highlight">k</label>
                 </td>
                 <td>
-                    učeni<label class="form-highlight">ci</label> (*TODO)
+                    učeni<label class="form-highlight">ci</label>
                 </td>
                 
                 <td colspan="2"></td>
@@ -74,7 +74,7 @@
                     dialo<label class="form-highlight">g</label>
                 </td>
                 <td>
-                    dialo<label class="form-highlight">zi</label> (*TODO)
+                    dialo<label class="form-highlight">zi</label>
                 </td>
             </tr>
             <tr>
@@ -82,7 +82,7 @@
                     ora<label class="form-highlight">h</label>
                 </td>
                 <td>
-                    ora<label class="form-highlight">si</label> (*TODO)
+                    ora<label class="form-highlight">si</label>
                 </td>
             </tr>
             <tr>
@@ -90,7 +90,7 @@
                     grad
                 </td>
                 <td>
-                    grad<label class="form-highlight">ovi</label> (TODO)
+                    grad<label class="form-highlight">ovi</label>
                 </td>
             </tr>
             <tr>
@@ -98,7 +98,7 @@
                     sto
                 </td>
                 <td>
-                    sto<label class="form-highlight">lovi</label> (TODO)
+                    sto<label class="form-highlight">lovi</label>
                 </td>
             </tr>
             <tr>
@@ -106,15 +106,7 @@
                     broj
                 </td>
                 <td>
-                    broj<label class="form-highlight">evi</label> (**TODO)
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    detalj
-                </td>
-                <td>
-                    detalj<label class="form-highlight">evi</label> (**TODO)
+                    broj<label class="form-highlight">evi</label>
                 </td>
             </tr>
             <tr>
@@ -122,15 +114,15 @@
                     konj
                 </td>
                 <td>
-                    konj<label class="form-highlight">evi</label> (**TODO)
+                    konj<label class="form-highlight">i</label>
                 </td>
             </tr>
             <tr>
                 <td>
-                    kolač
+                    ključ
                 </td>
                 <td>
-                    kolač<label class="form-highlight">evi</label> (**TODO)
+                    ključ<label class="form-highlight">evi</label>
                 </td>
             </tr>
             <tr>
@@ -138,7 +130,7 @@
                     nož
                 </td>
                 <td>
-                    nož<label class="form-highlight">evi</label> (**TODO)
+                    nož<label class="form-highlight">evi</label>
                 </td>
             </tr>
             <tr>
@@ -146,7 +138,7 @@
                     miš
                 </td>
                 <td>
-                    miš<label class="form-highlight">evi</label> (**TODO)
+                    miš<label class="form-highlight">evi</label>
                 </td>
             </tr>
             <tr>
@@ -154,7 +146,7 @@
                     džak
                 </td>
                 <td>
-                    dža<label class="form-highlight">ci</label> (TODO)
+                    dža<label class="form-highlight">ci</label>
                 </td>
             </tr>
             <tr>

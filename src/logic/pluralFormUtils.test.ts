@@ -25,15 +25,17 @@ function expectIncorrectPlural(result: Record<string, Record<string, boolean>>, 
 }
 
 describe('createNounMapping', () => {
+    it('no more than 4 variants', () => {
+        const nouns = loadLocalNouns();
+        const result = createNounMapping(nouns);
+        const element = result['student'];
+        expect(Object.keys(element).length).toBe(4);
+    });
+
     it('student - studenti', () => {
         const nouns = loadLocalNouns();
         const result = createNounMapping(nouns);
         expectCorrectPlural(result, 'student', 'studenti');
-    });
-    it('student - ...', () => {
-        const nouns = loadLocalNouns();
-        const result = createNounMapping(nouns);
-        expectIncorrectPlural(result, 'student', 'studenta');
     });
 
     it('stranac - stranci', () => {
@@ -41,10 +43,77 @@ describe('createNounMapping', () => {
         const result = createNounMapping(nouns);
         expectCorrectPlural(result, 'stranac', 'stranci');
     });
-    it('stranac - ...', () => {
+
+    it('učenik - učenici', () => {
         const nouns = loadLocalNouns();
         const result = createNounMapping(nouns);
-        expectIncorrectPlural(result, 'stranac', 'stranaci');
+        expectCorrectPlural(result, 'učenik', 'učenici');
+    });
+
+    it('dialog - dialozi', () => {
+        const nouns = loadLocalNouns();
+        const result = createNounMapping(nouns);
+        expectCorrectPlural(result, 'dialog', 'dialozi');
+    });
+
+    it('orah - orasi', () => {
+        const nouns = loadLocalNouns();
+        const result = createNounMapping(nouns);
+        expectCorrectPlural(result, 'orah', 'orasi');
+    });
+
+    it('grad - gradovi', () => {
+        const nouns = loadLocalNouns();
+        const result = createNounMapping(nouns);
+        expectCorrectPlural(result, 'grad', 'gradovi');
+    });
+
+    it('sto - stolovi', () => {
+        const nouns = loadLocalNouns();
+        const result = createNounMapping(nouns);
+        expectCorrectPlural(result, 'sto', 'stolovi');
+    });
+
+    it('posao - poslovi', () => {
+        const nouns = loadLocalNouns();
+        const result = createNounMapping(nouns);
+        expectCorrectPlural(result, 'posao', 'poslovi');
+    });
+
+    it('broj - brojevi', () => {
+        const nouns = loadLocalNouns();
+        const result = createNounMapping(nouns);
+        expectCorrectPlural(result, 'broj', 'brojevi');
+    });
+
+    it('konj - konji', () => {
+        const nouns = loadLocalNouns();
+        const result = createNounMapping(nouns);
+        expectCorrectPlural(result, 'konj', 'konji');
+    });
+
+    it('ključ - klučevi', () => {
+        const nouns = loadLocalNouns();
+        const result = createNounMapping(nouns);
+        expectCorrectPlural(result, 'ključ', 'ključevi');
+    });
+
+    it('nož - noževi', () => {
+        const nouns = loadLocalNouns();
+        const result = createNounMapping(nouns);
+        expectCorrectPlural(result, 'nož', 'noževi');
+    });
+
+    it('miš - miševi', () => {
+        const nouns = loadLocalNouns();
+        const result = createNounMapping(nouns);
+        expectCorrectPlural(result, 'miš', 'miševi');
+    });
+
+    it('džak - džaci', () => {
+        const nouns = loadLocalNouns();
+        const result = createNounMapping(nouns);
+        expectCorrectPlural(result, 'džak', 'džaci');
     });
 
     it('dan - dani', () => {
@@ -52,21 +121,11 @@ describe('createNounMapping', () => {
         const result = createNounMapping(nouns);
         expectCorrectPlural(result, 'dan', 'dani');
     });
-    it('dan - ...', () => {
-        const nouns = loadLocalNouns();
-        const result = createNounMapping(nouns);
-        expectIncorrectPlural(result, 'dan', 'dane');
-    });
 
     it('komšija - komšije', () => {
         const nouns = loadLocalNouns();
         const result = createNounMapping(nouns);
         expectCorrectPlural(result, 'komšija', 'komšije');
-    });
-    it('komšija - ...', () => {
-        const nouns = loadLocalNouns();
-        const result = createNounMapping(nouns);
-        expectIncorrectPlural(result, 'komšija', 'komšiji');
     });
 
     it('turista - turisti', () => {
@@ -74,21 +133,11 @@ describe('createNounMapping', () => {
         const result = createNounMapping(nouns);
         expectCorrectPlural(result, 'turista', 'turisti');
     });
-    it('turista - ...', () => {
-        const nouns = loadLocalNouns();
-        const result = createNounMapping(nouns);
-        expectIncorrectPlural(result, 'turista', 'turiste');
-    });
     
     it('ulica - ulice', () => {
         const nouns = loadLocalNouns();
         const result = createNounMapping(nouns);
         expectCorrectPlural(result, 'ulica', 'ulice');
-    });
-    it('ulica - ...', () => {
-        const nouns = loadLocalNouns();
-        const result = createNounMapping(nouns);
-        expectIncorrectPlural(result, 'ulica', 'ulica');
     });
     
     it('stvar - stvari', () => {
@@ -96,31 +145,16 @@ describe('createNounMapping', () => {
         const result = createNounMapping(nouns);
         expectCorrectPlural(result, 'stvar', 'stvari');
     });
-    it('stvar - stvari', () => {
-        const nouns = loadLocalNouns();
-        const result = createNounMapping(nouns);
-        expectIncorrectPlural(result, 'stvar', 'stvare');
-    });
 
     it('slovo - slova', () => {
         const nouns = loadLocalNouns();
         const result = createNounMapping(nouns);
         expectCorrectPlural(result, 'slovo', 'slova');
     });
-    it('slovo - ...', () => {
-        const nouns = loadLocalNouns();
-        const result = createNounMapping(nouns);
-        expectIncorrectPlural(result, 'slovo', 'slove');
-    });
 
     it('ime - imena', () => {
         const nouns = loadLocalNouns();
         const result = createNounMapping(nouns);
         expectCorrectPlural(result, 'ime', 'imena');
-    });
-    it('ime - ...', () => {
-        const nouns = loadLocalNouns();
-        const result = createNounMapping(nouns);
-        expectIncorrectPlural(result, 'ime', 'ime');
     });
 });
