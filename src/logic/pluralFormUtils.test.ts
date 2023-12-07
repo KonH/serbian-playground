@@ -157,4 +157,22 @@ describe('createNounMapping', () => {
         const result = createNounMapping(nouns);
         expectCorrectPlural(result, 'ime', 'imena');
     });
+
+    it('dete - deca', () => {
+        const nouns = loadLocalNouns();
+        const result = createNounMapping(nouns);
+        expectCorrectPlural(result, 'dete', 'deca');
+    });
+
+    it('klizanje - klizanja', () => {
+        const nouns = loadLocalNouns();
+        const result = createNounMapping(nouns);
+        expectCorrectPlural(result, 'klizanje', 'klizanja');
+    });
+
+    it('uništenje - uništenja', () => {
+        const nouns = loadLocalNouns();
+        const result = createNounMapping(nouns);
+        expectCorrectPlural(result, 'uništenje', 'uništenja');
+    });
 });

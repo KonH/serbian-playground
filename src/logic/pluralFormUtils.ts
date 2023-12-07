@@ -137,7 +137,7 @@ export const createNounMapping = (nouns: NounDef[]): Record<string, Record<strin
                 }
                 case 'f': return pluralFormTransforms.endsWithE_NoVowelEnding(word);
                 case 'n': {
-                    if (noun.word.endsWith('e')) {
+                    if (word.endsWith('e') && !word.endsWith('nje')) {
                         return pluralFormTransforms.endsWithNa(word);
                     }
                     return pluralFormTransforms.endsWithA_NoVowelEnding(word);
