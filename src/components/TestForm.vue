@@ -2,7 +2,15 @@
 <table class="test-table table table-bordered">
   <thead>
     <tr>
-      <th colspan="2">{{ question }}?</th>
+      <th colspan="2">
+        <div>
+          <div>{{ question }}?</div>
+          <div>
+            <b-button v-if="inlineHint !== ''" variant="secondary" @click="toggleInlineHint">?</b-button>
+            <div v-if="showInlineHint">{{ inlineHint }}</div>
+          </div>
+        </div>
+      </th>
     </tr>
   </thead>
   <tbody>
@@ -36,19 +44,22 @@ Streak: {{ rightCounter }}
 </template>
 
 <script lang="ts">
+import { TestEntry } from '@/logic/TestEntry';
 import { defineComponent } from 'vue';
 
 export default defineComponent({
   name: 'TestForm',
   props: {
     mapping: {
-      type: Object as () => Record<string, Record<string, boolean>>,
+      type: Object as () => TestEntry,
       required: true
     }
   },
   data: () => {
     return {
       question: '',
+      inlineHint: '123',
+      showInlineHint: false,
       answers: [] as string[],
       rightCounter: 0,
       animating: false
@@ -61,7 +72,7 @@ export default defineComponent({
       }
 
       const selectedAnswer = this.answers[index];
-      const correctAnswers = this.mapping[this.question];
+      const correctAnswers = this.mapping.questions[this.question].answers;
       const isCorrect = correctAnswers[selectedAnswer];
       const target = e.currentTarget as HTMLElement;
       if (target == null) {
@@ -95,18 +106,20 @@ export default defineComponent({
     },
     
     generateNewQuestion() {
-      let questions = Object.keys(this.mapping);
+      let questions = Object.keys(this.mapping.questions);
       // Filter out the last question if it exists
       if (this.question !== null) {
         questions = questions.filter(question => question !== this.question);
       }
       this.question = questions[Math.floor(Math.random() * questions.length)];
-      const answerRecords = this.mapping[this.question];
+      const answerRecords = this.mapping.questions[this.question].answers;
       const answerKeys = Object.keys(answerRecords);
       const correctAnswer = answerKeys.find(key => answerRecords[key]) ?? '';
       let incorrectAnswers = answerKeys.filter(key => !answerRecords[key]);
       incorrectAnswers = this.shuffleArray(incorrectAnswers).slice(0, 3);
       this.answers = this.shuffleArray([correctAnswer, ...incorrectAnswers]);
+      this.inlineHint = this.mapping.questions[this.question].inlineHint;
+      this.showInlineHint = false;
     },
     
     shuffleArray(array: string[]) {
@@ -115,6 +128,10 @@ export default defineComponent({
         [array[i], array[j]] = [array[j], array[i]];
       }
       return array;
+    },
+
+    toggleInlineHint() {
+      this.showInlineHint = !this.showInlineHint;
     }
   },
   mounted() {

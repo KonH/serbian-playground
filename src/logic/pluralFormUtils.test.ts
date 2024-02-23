@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { NounDef, loadNouns, createNounMapping } from './pluralFormUtils';
+import { TestEntry } from './TestEntry';
 
 function loadLocalNouns(): NounDef[] {
     const nouns: NounDef[] = [];
@@ -10,17 +11,17 @@ function loadLocalNouns(): NounDef[] {
     return nouns;
 }
 
-function expectPlural(result: Record<string, Record<string, boolean>>, singular: string, plural: string, value: boolean) {
-    expect(result).toHaveProperty(singular);
-    expect(result[singular]).toHaveProperty(plural);
-    expect(result[singular][plural]).toBe(value);
+function expectPlural(result: TestEntry, singular: string, plural: string, value: boolean) {
+    expect(result.questions).toHaveProperty(singular);
+    expect(result.questions[singular].answers).toHaveProperty(plural);
+    expect(result.questions[singular].answers[plural]).toBe(value);
 }
 
-function expectCorrectPlural(result: Record<string, Record<string, boolean>>, singular: string, plural: string) {
+function expectCorrectPlural(result: TestEntry, singular: string, plural: string) {
     expectPlural(result, singular, plural, true);
 }
 
-function expectIncorrectPlural(result: Record<string, Record<string, boolean>>, singular: string, plural: string) {
+function expectIncorrectPlural(result: TestEntry, singular: string, plural: string) {
     expectPlural(result, singular, plural, false);
 }
 
@@ -28,8 +29,8 @@ describe('createNounMapping', () => {
     it('no more than 4 variants', () => {
         const nouns = loadLocalNouns();
         const result = createNounMapping(nouns);
-        const element = result['student'];
-        expect(Object.keys(element).length).toBe(4);
+        const element = result.questions['student'];
+        expect(Object.keys(element.answers).length).toBe(4);
     });
 
     it('student - studenti', () => {

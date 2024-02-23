@@ -1,4 +1,5 @@
 import Papa from 'papaparse';
+import { TestEntry } from './TestEntry';
 
 type CsvRow = string[];
 
@@ -69,8 +70,8 @@ function isSoftConsonant(c: string): boolean {
     return ['j', 'č', 'ć', 'đ', 'š', 'ž'].includes(c);
 }
 
-export const createNounMapping = (nouns: NounDef[]): Record<string, Record<string, boolean>> => {
-    const result: Record<string, Record<string, boolean>> = {};
+export const createNounMapping = (nouns: NounDef[]): TestEntry => {
+    const result: TestEntry = { questions: {} };
     const pluralFormTransforms = {
         endsWithI_SkipPrevChar: (w: string) => w.slice(0, w.length - 2) + w[w.length - 1] + 'i',
         endsWithI_NoVowelEnding: (w: string) => skipLastVowel(w) + 'i',
@@ -145,34 +146,55 @@ export const createNounMapping = (nouns: NounDef[]): Record<string, Record<strin
             }
         }
     }
+
+    function displayGender(gender: 'm' | 'f' | 'n') {
+        switch (gender) {
+            case 'm':
+                return 'muško';
+            case 'f':
+                return 'žensko';
+            case 'n':
+                return 'neodređeno';
+            default:
+                throw new Error('Invalid gender');
+        }
+    }
     
     for (const noun of nouns) {
-        const container: Record<string, boolean> = {};
-        applyAllFormTransforms(container, noun.word);
+        const answers: Record<string, boolean> = {};
+        applyAllFormTransforms(answers, noun.word);
         const correctPluralForm = getCorrectPluralForm(noun);
-        container[correctPluralForm] = true;
-        result[noun.word] = container;
+        answers[correctPluralForm] = true;
+        result.questions[noun.word] = { 
+            question: noun.word,
+            inlineHint: displayGender(noun.gender),
+            answers
+        };
     }
-    const limitedResult: Record<string, Record<string, boolean>> = {};
-    for (const key in result) {
-        const element = result[key];
-        const limitedElement: Record<string, boolean> = {};
-        const keys = Object.keys(element);
-        const correctPluralForm = keys.find(k => element[k]);
+    const limitedResult: TestEntry = { questions: {} };
+    for (const key in result.questions) {
+        const element = result.questions[key];
+        const limitedAnswers: Record<string, boolean> = {};
+        const keys = Object.keys(element.answers);
+        const correctPluralForm = keys.find(k => element.answers[k]);
         if (correctPluralForm) {
-            limitedElement[correctPluralForm] = true;
+            limitedAnswers[correctPluralForm] = true;
         }
-        const otherPluralForms = keys.filter(k => !element[k]);
+        const otherPluralForms = keys.filter(k => !element.answers[k]);
         let otherPluralFormsCount = otherPluralForms.length;
         const otherPluralFormsToTake = Math.min(3, otherPluralFormsCount);
         for (let i = 0; i < otherPluralFormsToTake; i++) {
             const randomIndex = Math.floor(Math.random() * otherPluralFormsCount);
             const randomPluralForm = otherPluralForms[randomIndex];
-            limitedElement[randomPluralForm] = false;
+            limitedAnswers[randomPluralForm] = false;
             otherPluralForms.splice(randomIndex, 1);
             otherPluralFormsCount--;
         }
-        limitedResult[key] = limitedElement;
+        limitedResult.questions[key] = {
+            question: element.question,
+            inlineHint: element.inlineHint,
+            answers: limitedAnswers
+        };
     }
     return limitedResult;
 };

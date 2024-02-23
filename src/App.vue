@@ -45,8 +45,9 @@ import TestForm from './components/TestForm.vue';
 import PluralFormTable from './components/PluralFormTable.vue';
 import { NounDef, loadNouns, createNounMapping } from './logic/pluralFormUtils';
 import nounsCsv from '!!raw-loader!./assets/nouns.csv';
+import { TestEntry, TestEntryElement } from './logic/TestEntry';
 
-const version = '0.16';
+const version = '0.17';
 
 type State = 
   'menu' |
@@ -115,7 +116,7 @@ export default defineComponent({
           mapping[key][value] = isCorrect;
         }
       }
-      return mapping;
+      return this.convertFromLegacyMapping(mapping);
     },
 
     invertVerbFormMapping() {
@@ -133,7 +134,7 @@ export default defineComponent({
           invertMapping[value][k] = false;
         }
       }
-      return invertMapping;
+      return this.convertFromLegacyMapping(invertMapping);
     },
 
     pluralFormMapping() {
@@ -163,7 +164,20 @@ export default defineComponent({
     
     backToMenu() {
       this.state = 'menu';
-    }
+    },
+
+    convertFromLegacyMapping(input: Record<string, Record<string, boolean>>) {
+      const testEntry: TestEntry = { questions: {} };
+      for (const [key, answers] of Object.entries(input)) {
+        const testEntryElement: TestEntryElement = {
+          question: key,
+          inlineHint: '',
+          answers
+        };
+        testEntry.questions[key] = testEntryElement;
+      }
+      return testEntry;
+    },
   },
   components: {
     VerbFormTable,
