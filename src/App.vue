@@ -7,7 +7,9 @@
         <b-button @click="openInvertVerbTest" variant="danger" class="mb-5">Biti verb forms test (invert)</b-button>
       
         <b-button @click="openPluralTable" variant="primary" class="mb-3">Plural forms table</b-button>
-        <b-button @click="openPluralTest" variant="danger" class="mb-3">Plural forms test</b-button>
+        <b-button @click="openPluralTest" variant="danger" class="mb-5">Plural forms test</b-button>
+
+        <b-button @click="openTranslator" variant="primary" class="mb-3">SRB/СРБ translator</b-button>
       </div>
       
       <div v-if="inVerbFormTable" class="d-flex flex-column align-items-center">
@@ -16,11 +18,11 @@
       </div>
       <div v-if="inVerbFormTest" class="d-flex flex-column align-items-center">
         <b-button @click="backToMenu" variant="secondary" class="mb-3">Back</b-button>
-        <TestForm :mapping="verbFormMapping" />
+        <TestForm :mapping="verbFormMapping" :langStyle="langStyle" />
       </div>
       <div v-if="inInvertVerbFormTest" class="d-flex flex-column align-items-center">
         <b-button @click="backToMenu" variant="secondary" class="mb-3">Back</b-button>
-        <TestForm :mapping="invertVerbFormMapping" />
+        <TestForm :mapping="invertVerbFormMapping" :langStyle="langStyle" />
       </div>
     
       <div v-if="inPluralTable" class="d-flex flex-column align-items-center">
@@ -29,9 +31,22 @@
       </div>
       <div v-if="inPluralFormTest" class="d-flex flex-column align-items-center">
         <b-button @click="backToMenu" variant="secondary" class="mb-3">Back</b-button>
-        <TestForm :mapping="pluralFormMapping" />
+        <TestForm :mapping="pluralFormMapping" :langStyle="langStyle" />
+      </div>
+
+      <div v-if="inTranslator" class="d-flex flex-column align-items-center">
+        <b-button @click="backToMenu" variant="secondary" class="mb-3">Back</b-button>
+        <TranslatorForm />
       </div>
     </div>
+    <div v-if="inMenu">
+        <b-button @click="clickLatinButton" :variant="latinButtonVariant" class="m-2">
+          SRB
+        </b-button>
+        <b-button @click="clickCyrillicButton" :variant="cyrillicButtonVariant">
+          СРБ
+        </b-button>
+      </div>
     <footer class="footer">
       Version: {{ version }}
     </footer>
@@ -43,11 +58,12 @@ import { defineComponent } from 'vue';
 import VerbFormTable from './components/VerbFormTable.vue';
 import TestForm from './components/TestForm.vue';
 import PluralFormTable from './components/PluralFormTable.vue';
+import TranslatorForm from './components/TranslatorForm.vue';
 import { NounDef, loadNouns, createNounMapping } from './logic/pluralFormUtils';
 import nounsCsv from '!!raw-loader!./assets/nouns.csv';
 import { TestEntry, TestEntryElement } from './logic/TestEntry';
 
-const version = '0.17';
+const version = '0.18';
 
 type State = 
   'menu' |
@@ -55,7 +71,10 @@ type State =
   'verb-form-test' |
   'invert-verb-form-test' |
   'plural-form-table' |
-  'plural-form-test';
+  'plural-form-test' |
+  'translator';
+
+type Style = 'latin' | 'cyrillic';
 
 const bitiForms: Record<string, string> = {
   'ja': 'sam',
@@ -78,7 +97,8 @@ export default defineComponent({
   data: () => {
     return {
       version: version,
-      state: 'menu' as State
+      state: 'menu' as State,
+      langStyle: 'latin' as Style
     }
   },
   computed: {
@@ -104,6 +124,10 @@ export default defineComponent({
 
     inPluralFormTest() {
       return this.state == 'plural-form-test';
+    },
+
+    inTranslator() {
+      return this.state == 'translator';
     },
 
     verbFormMapping() {
@@ -139,6 +163,14 @@ export default defineComponent({
 
     pluralFormMapping() {
       return createNounMapping(nouns);
+    },
+
+    latinButtonVariant() {
+      return this.langStyle == 'latin' ? 'primary' : 'secondary';
+    },
+
+    cyrillicButtonVariant() {
+      return this.langStyle == 'cyrillic' ? 'primary' : 'secondary';
     }
   },
   methods: {
@@ -161,6 +193,10 @@ export default defineComponent({
     openPluralTest() {
       this.state = 'plural-form-test';
     },
+
+    openTranslator() {
+      this.state = 'translator';
+    },
     
     backToMenu() {
       this.state = 'menu';
@@ -178,11 +214,20 @@ export default defineComponent({
       }
       return testEntry;
     },
+
+    clickLatinButton() {
+      this.langStyle = 'latin';
+    },
+
+    clickCyrillicButton() {
+      this.langStyle = 'cyrillic';
+    }
   },
   components: {
     VerbFormTable,
     PluralFormTable,
-    TestForm
+    TestForm,
+    TranslatorForm
   }
 });
 </script>

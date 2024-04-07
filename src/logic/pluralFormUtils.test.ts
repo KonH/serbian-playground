@@ -21,10 +21,6 @@ function expectCorrectPlural(result: TestEntry, singular: string, plural: string
     expectPlural(result, singular, plural, true);
 }
 
-function expectIncorrectPlural(result: TestEntry, singular: string, plural: string) {
-    expectPlural(result, singular, plural, false);
-}
-
 describe('createNounMapping', () => {
     it('no more than 4 variants', () => {
         const nouns = loadLocalNouns();

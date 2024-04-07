@@ -4,7 +4,7 @@
     <tr>
       <th colspan="2">
         <div>
-          <div>{{ question }}?</div>
+          <div>{{ questionText }}?</div>
           <div>
             <b-button v-if="inlineHint !== ''" variant="secondary" @click="toggleInlineHint">?</b-button>
             <div v-if="showInlineHint">{{ inlineHint }}</div>
@@ -17,24 +17,24 @@
     <tr>
       <td class="column-width">
         <b-button variant="info" @click="e => checkAnswer(e, 0)" v-if="answers.length > 0">
-          {{ answers[0] }}
+          {{ answerTexts[0] }}
         </b-button>
       </td>
       <td class="column-width">
         <b-button variant="info" @click="e => checkAnswer(e, 1)" v-if="answers.length > 1">
-          {{ answers[1] }}
+          {{ answerTexts[1] }}
         </b-button>
       </td>
     </tr>
     <tr>
       <td class="column-width">
         <b-button variant="info" @click="e => checkAnswer(e, 2)" v-if="answers.length > 2">
-          {{ answers[2] }}
+          {{ answerTexts[2] }}
         </b-button>
       </td>
       <td class="column-width">
         <b-button variant="info" @click="e => checkAnswer(e, 3)" v-if="answers.length > 3">
-          {{ answers[3] }}
+          {{ answerTexts[3] }}
         </b-button>
       </td>
     </tr>
@@ -44,8 +44,9 @@ Streak: {{ rightCounter }}
 </template>
 
 <script lang="ts">
-import { TestEntry } from '@/logic/TestEntry';
 import { defineComponent } from 'vue';
+import { TestEntry } from '@/logic/TestEntry';
+import { latinToCyrillic } from '@/logic/translatorLogic';
 
 export default defineComponent({
   name: 'TestForm',
@@ -53,16 +54,34 @@ export default defineComponent({
     mapping: {
       type: Object as () => TestEntry,
       required: true
+    },
+    langStyle: {
+      type: String,
+      default: 'latin'
     }
   },
   data: () => {
     return {
       question: '',
-      inlineHint: '123',
+      inlineHint: '',
       showInlineHint: false,
       answers: [] as string[],
       rightCounter: 0,
       animating: false
+    }
+  },
+  computed: {
+    questionText() {
+      if (this.langStyle == 'cyrillic') {
+        return latinToCyrillic(this.question);
+      }
+      return this.question;
+    },
+    answerTexts() {
+      if (this.langStyle == 'cyrillic') {
+        return this.answers.map(answer => latinToCyrillic(answer));
+      }
+      return this.answers;
     }
   },
   methods: {
