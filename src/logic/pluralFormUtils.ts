@@ -1,10 +1,14 @@
 import Papa from 'papaparse';
 import { TestEntry } from './TestEntry';
 
-type CsvRow = string[];
+type NounRow = {
+    word: string;
+    gender: string;
+    plural?: string;
+}
 
-type ParseResult = {
-  data: CsvRow[];
+type NounParseResult = {
+  data: NounRow[];
 };
 
 export type NounDef = {
@@ -18,16 +22,16 @@ const vowels = ['a', 'e', 'i', 'o', 'u'];
 export function loadNouns(csv: string, nouns: NounDef[]) {
     Papa.parse(csv, {
         download: false,
-        header: false,
-        complete: (results: ParseResult) => {
+        header: true,
+        complete: (results: NounParseResult) => {
           results.data.forEach(row => {
-            const word = row[0].trim();
-            const gender = ensureGender(row[1]);
+            const word = row.word.trim();
+            const gender = ensureGender(row.gender);
             if ( gender == null ) {
               return;
             }
             const readyGender = gender as 'm' | 'f' | 'n';
-            const optionalPluralException = row[2]?.trim() || null;
+            const optionalPluralException = row.plural?.trim() || null;
             const def = {
               word: word,
               gender: readyGender,
