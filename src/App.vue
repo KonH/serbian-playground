@@ -2,27 +2,29 @@
   <div class="wrapper">
     <div class="container content">
       <div class="d-flex flex-column align-items-center" v-if="inMenu">
-        <b-button @click="openVerbTable" variant="primary" class="mb-3">Biti verb forms table</b-button>
-        <b-button @click="openVerbTest" variant="danger" class="mb-3">Biti verb forms test</b-button>
-        <b-button @click="openInvertVerbTest" variant="danger" class="mb-5">Biti verb forms test (invert)</b-button>
+        <b-button @click="openBitiVerbTable" variant="primary" class="mb-3">Biti verb forms table</b-button>
+        <b-button @click="openBitiVerbTest" variant="danger" class="mb-3">Biti verb forms test</b-button>
+        <b-button @click="openInvertBitiVerbTest" variant="danger" class="mb-5">Biti verb forms test (invert)</b-button>
       
         <b-button @click="openPluralTable" variant="primary" class="mb-3">Plural forms table</b-button>
         <b-button @click="openPluralTest" variant="danger" class="mb-5">Plural forms test</b-button>
 
-        <b-button @click="openTranslator" variant="primary" class="mb-3">SRB/СРБ translator</b-button>
+        <b-button @click="openTranslator" variant="primary" class="mb-5">SRB/СРБ translator</b-button>
+
+        <b-button @click="openVerbConjugationTest" variant="danger" class="mb-5">Verb conjugation test</b-button>
       </div>
       
-      <div v-if="inVerbFormTable" class="d-flex flex-column align-items-center">
+      <div v-if="inBitiVerbFormTable" class="d-flex flex-column align-items-center">
         <b-button @click="backToMenu" variant="secondary" class="mb-3">Back</b-button>
-        <VerbFormTable />
+        <BitiVerbFormTable />
       </div>
-      <div v-if="inVerbFormTest" class="d-flex flex-column align-items-center">
+      <div v-if="inBitiVerbFormTest" class="d-flex flex-column align-items-center">
         <b-button @click="backToMenu" variant="secondary" class="mb-3">Back</b-button>
-        <TestForm :mapping="verbFormMapping" :langStyle="langStyle" />
+        <TestForm :mapping="bitiVerbFormMapping" :langStyle="langStyle" />
       </div>
-      <div v-if="inInvertVerbFormTest" class="d-flex flex-column align-items-center">
+      <div v-if="inInvertBitiVerbFormTest" class="d-flex flex-column align-items-center">
         <b-button @click="backToMenu" variant="secondary" class="mb-3">Back</b-button>
-        <TestForm :mapping="invertVerbFormMapping" :langStyle="langStyle" />
+        <TestForm :mapping="invertBitiVerbFormMapping" :langStyle="langStyle" />
       </div>
     
       <div v-if="inPluralTable" class="d-flex flex-column align-items-center">
@@ -38,6 +40,12 @@
         <b-button @click="backToMenu" variant="secondary" class="mb-3">Back</b-button>
         <TranslatorForm />
       </div>
+
+      <div v-if="inVerbConjugationTest" class="d-flex flex-column align-items-center">
+        <b-button @click="backToMenu" variant="secondary" class="mb-3">Back</b-button>
+        <TestForm :mapping="verbConjugationMapping" :langStyle="langStyle" />
+      </div>
+
     </div>
     <div v-if="inMenu">
         <b-button @click="clickLatinButton" :variant="latinButtonVariant" class="m-2">
@@ -55,24 +63,27 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import VerbFormTable from './components/VerbFormTable.vue';
+import BitiVerbFormTable from './components/BitiVerbFormTable.vue';
 import TestForm from './components/TestForm.vue';
 import PluralFormTable from './components/PluralFormTable.vue';
 import TranslatorForm from './components/TranslatorForm.vue';
 import { NounDef, loadNouns, createNounMapping } from './logic/pluralFormUtils';
 import nounsCsv from '!!raw-loader!./assets/nouns.csv';
 import { TestEntry, TestEntryElement } from './logic/TestEntry';
+import { VerbDef, loadVerbs, createVerbMapping } from './logic/verbConjugationUtils';
+import verbsCsv from '!!raw-loader!./assets/verbs.csv';
 
-const version = '0.18';
+const version = '0.19';
 
 type State = 
   'menu' |
-  'verb-form-table' |
-  'verb-form-test' |
-  'invert-verb-form-test' |
+  'biti-verb-form-table' |
+  'biti-verb-form-test' |
+  'invert-biti-verb-form-test' |
   'plural-form-table' |
   'plural-form-test' |
-  'translator';
+  'translator' |
+  'verb-conjugation-test';
 
 type Style = 'latin' | 'cyrillic';
 
@@ -92,6 +103,9 @@ const bitiForms: Record<string, string> = {
 const nouns: NounDef[] = [];
 loadNouns(nounsCsv, nouns);
 
+const verbs: VerbDef[] = [];
+loadVerbs(verbsCsv, verbs);
+
 export default defineComponent({
   name: 'App',
   data: () => {
@@ -106,16 +120,16 @@ export default defineComponent({
       return this.state == 'menu';
     },
 
-    inVerbFormTable() {
-      return this.state == 'verb-form-table';
+    inBitiVerbFormTable() {
+      return this.state == 'biti-verb-form-table';
     },
 
-    inVerbFormTest() {
-      return this.state == 'verb-form-test';
+    inBitiVerbFormTest() {
+      return this.state == 'biti-verb-form-test';
     },
 
-    inInvertVerbFormTest() {
-      return this.state == 'invert-verb-form-test';
+    inInvertBitiVerbFormTest() {
+      return this.state == 'invert-biti-verb-form-test';
     },
 
     inPluralTable() {
@@ -130,7 +144,11 @@ export default defineComponent({
       return this.state == 'translator';
     },
 
-    verbFormMapping() {
+    inVerbConjugationTest() {
+      return this.state == 'verb-conjugation-test';
+    },
+
+    bitiVerbFormMapping() {
       const mapping: Record<string, Record<string, boolean>> = {};
       const allValues = Object.values(bitiForms);
       for (const [key, correctValue] of Object.entries(bitiForms)) {
@@ -143,7 +161,7 @@ export default defineComponent({
       return this.convertFromLegacyMapping(mapping);
     },
 
-    invertVerbFormMapping() {
+    invertBitiVerbFormMapping() {
       const invertMapping: Record<string, Record<string, boolean>> = {};
       for (const [key, value] of Object.entries(bitiForms)) {
         invertMapping[value] = {};
@@ -171,19 +189,23 @@ export default defineComponent({
 
     cyrillicButtonVariant() {
       return this.langStyle == 'cyrillic' ? 'primary' : 'secondary';
+    },
+
+    verbConjugationMapping() {
+      return createVerbMapping(verbs);
     }
   },
   methods: {
-    openVerbTable() {
-      this.state = 'verb-form-table';
+    openBitiVerbTable() {
+      this.state = 'biti-verb-form-table';
     },
 
-    openVerbTest() {
-      this.state = 'verb-form-test';
+    openBitiVerbTest() {
+      this.state = 'biti-verb-form-test';
     },
 
-    openInvertVerbTest() {
-      this.state = 'invert-verb-form-test';
+    openInvertBitiVerbTest() {
+      this.state = 'invert-biti-verb-form-test';
     },
 
     openPluralTable() {
@@ -196,6 +218,10 @@ export default defineComponent({
 
     openTranslator() {
       this.state = 'translator';
+    },
+
+    openVerbConjugationTest() {
+      this.state = 'verb-conjugation-test';
     },
     
     backToMenu() {
@@ -224,7 +250,7 @@ export default defineComponent({
     }
   },
   components: {
-    VerbFormTable,
+    BitiVerbFormTable,
     PluralFormTable,
     TestForm,
     TranslatorForm
