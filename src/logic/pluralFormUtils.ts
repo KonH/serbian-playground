@@ -14,7 +14,7 @@ type NounParseResult = {
 export type NounDef = {
     word: string,
     gender: 'm' | 'f' | 'n',
-    plural_exception: string | null
+    plural_exception: string
 };
 
 const vowels = ['a', 'e', 'i', 'o', 'u'];
@@ -31,7 +31,7 @@ export function loadNouns(csv: string, nouns: NounDef[]) {
               return;
             }
             const readyGender = gender as 'm' | 'f' | 'n';
-            const optionalPluralException = row.plural?.trim() || null;
+            const optionalPluralException = row.plural?.trim() ?? '';
             const def = {
               word: word,
               gender: readyGender,
