@@ -21,6 +21,12 @@ export type NounDef = {
     word: string;
     gender: 'm' | 'f' | 'n';
     plural_exception: string;
+    genitiv: string;
+    dativ: string;
+    akuzativ: string;
+    instrumental: string;
+    lokativ: string;
+    vokativ: string;
 };
 
 const vowels = ['a', 'e', 'i', 'o', 'u'];
@@ -41,7 +47,13 @@ export function loadNouns(csv: string, nouns: NounDef[]) {
                 const def = {
                     word: word,
                     gender: readyGender,
-                    plural_exception: optionalPluralException
+                    plural_exception: optionalPluralException,
+                    genitiv: row.genitiv.trim(),
+                    dativ: row.dativ.trim(),
+                    akuzativ: row.akuzativ.trim(),
+                    instrumental: row.instrumental.trim(),
+                    lokativ: row.lokativ.trim(),
+                    vokativ: row.vokativ.trim()
                 };
                 nouns.push(def);
             }

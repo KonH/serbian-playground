@@ -12,6 +12,8 @@
         <b-button @click="openTranslator" variant="primary" class="mb-5">SRB/СРБ translator</b-button>
 
         <b-button @click="openVerbConjugationTest" variant="danger" class="mb-5">Verb conjugation test</b-button>
+
+        <b-button @click="openNounCaseTest" variant="danger" class="mb-5">Noun case test</b-button>
       </div>
       
       <div v-if="inBitiVerbFormTable" class="d-flex flex-column align-items-center">
@@ -46,6 +48,11 @@
         <TestForm :mapping="verbConjugationMapping" :langStyle="langStyle" />
       </div>
 
+      <div v-if="inNounCaseTest" class="d-flex flex-column align-items-center">
+        <b-button @click="backToMenu" variant="secondary" class="mb-3">Back</b-button>
+        <TestForm :mapping="nounCaseMapping" :langStyle="langStyle" />
+      </div>
+
     </div>
     <div v-if="inMenu">
         <b-button @click="clickLatinButton" :variant="latinButtonVariant" class="m-2">
@@ -72,8 +79,9 @@ import nounsCsv from '!!raw-loader!./assets/nouns.csv';
 import { TestEntry, TestEntryElement } from './logic/TestEntry';
 import { VerbDef, loadVerbs, createVerbMapping } from './logic/verbConjugationUtils';
 import verbsCsv from '!!raw-loader!./assets/verbs.csv';
+import { createNounCaseMapping } from './logic/nounCaseUtils';
 
-const version = '0.19';
+const version = '0.20';
 
 type State = 
   'menu' |
@@ -83,7 +91,8 @@ type State =
   'plural-form-table' |
   'plural-form-test' |
   'translator' |
-  'verb-conjugation-test';
+  'verb-conjugation-test' |
+  'noun-case-test';
 
 type Style = 'latin' | 'cyrillic';
 
@@ -148,6 +157,10 @@ export default defineComponent({
       return this.state == 'verb-conjugation-test';
     },
 
+    inNounCaseTest() {
+      return this.state == 'noun-case-test';
+    },
+
     bitiVerbFormMapping() {
       const mapping: Record<string, Record<string, boolean>> = {};
       const allValues = Object.values(bitiForms);
@@ -193,6 +206,10 @@ export default defineComponent({
 
     verbConjugationMapping() {
       return createVerbMapping(verbs);
+    },
+
+    nounCaseMapping() {
+      return createNounCaseMapping(nouns);
     }
   },
   methods: {
@@ -222,6 +239,10 @@ export default defineComponent({
 
     openVerbConjugationTest() {
       this.state = 'verb-conjugation-test';
+    },
+
+    openNounCaseTest() {
+      this.state = 'noun-case-test';
     },
     
     backToMenu() {
