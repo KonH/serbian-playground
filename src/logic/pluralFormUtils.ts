@@ -5,16 +5,22 @@ type NounRow = {
     word: string;
     gender: string;
     plural: string;
-}
+    genitiv: string;
+    dativ: string;
+    akuzativ: string;
+    instrumental: string;
+    lokativ: string;
+    vokativ: string;
+};
 
 type NounParseResult = {
-  data: NounRow[];
+    data: NounRow[];
 };
 
 export type NounDef = {
-    word: string,
-    gender: 'm' | 'f' | 'n',
-    plural_exception: string
+    word: string;
+    gender: 'm' | 'f' | 'n';
+    plural_exception: string;
 };
 
 const vowels = ['a', 'e', 'i', 'o', 'u'];
