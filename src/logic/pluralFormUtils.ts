@@ -4,7 +4,7 @@ import { TestEntry } from './TestEntry';
 type NounRow = {
     word: string;
     gender: string;
-    plural?: string;
+    plural: string;
 }
 
 type NounParseResult = {
