@@ -8,8 +8,8 @@ try {
   const lines = data.split('\n');
   let currentVerb = '';
   let output = '';
-  lines.forEach((line: String) => {
-    if (line.trim() === '') return;
+  for(const line in lines) {
+    if (line.trim() === '') continue;
     if (!line.includes('\t')) {
       if (currentVerb !== '') {
         appendFileSync(outputFile, `${currentVerb}${output}\n`);
@@ -17,10 +17,10 @@ try {
       }
       currentVerb = line.trim();
     } else {
-      const [pronoun, form] = line.split('\t').map((s: String) => s.trim());
+      const [_, form] = line.split('\t').map((s: string) => s.trim());
       output += ',' + form;
     }
-  });
+  }
   if (currentVerb !== '') {
     appendFileSync(outputFile, `${currentVerb}${output}\n`);
   }

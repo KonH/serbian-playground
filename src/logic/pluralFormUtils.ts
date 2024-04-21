@@ -24,23 +24,23 @@ export function loadNouns(csv: string, nouns: NounDef[]) {
         download: false,
         header: true,
         complete: (results: NounParseResult) => {
-          results.data.forEach(row => {
-            const word = row.word.trim();
-            const gender = ensureGender(row.gender);
-            if ( gender == null ) {
-              return;
+            for (const row of results.data) {
+                const word = row.word.trim();
+                const gender = ensureGender(row.gender);
+                if ( gender == null ) {
+                    return;
+                }
+                const readyGender = gender as 'm' | 'f' | 'n';
+                const optionalPluralException = row.plural?.trim() ?? '';
+                const def = {
+                    word: word,
+                    gender: readyGender,
+                    plural_exception: optionalPluralException
+                };
+                nouns.push(def);
             }
-            const readyGender = gender as 'm' | 'f' | 'n';
-            const optionalPluralException = row.plural?.trim() ?? '';
-            const def = {
-              word: word,
-              gender: readyGender,
-              plural_exception: optionalPluralException
-            };
-            nouns.push(def);
-          });
         }
-      });
+    });
 }
 
 function ensureGender(input: string) {
