@@ -81,7 +81,7 @@ import { VerbDef, loadVerbs, createVerbMapping } from './logic/verbConjugationUt
 import verbsCsv from '!!raw-loader!./assets/verbs.csv';
 import { createNounCaseMapping } from './logic/nounCaseUtils';
 
-const version = '0.21';
+const version = '0.22';
 
 type State = 
   'menu' |

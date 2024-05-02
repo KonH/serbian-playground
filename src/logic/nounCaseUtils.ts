@@ -17,6 +17,9 @@ export const createNounCaseMapping = (nouns: NounDef[]): TestEntry => {
     const result: TestEntry = { questions: {} };
     for (const noun of nouns) {
         tryAddGenitiv(noun, result.questions);
+        tryAddDativ(noun, result.questions);
+        tryAddAkuzativ(noun, result.questions);
+        tryAddInstrumental(noun, result.questions);
         tryAddLocativ(noun, result.questions);
         tryAddVokativ(noun, result.questions);
     }
@@ -25,10 +28,36 @@ export const createNounCaseMapping = (nouns: NounDef[]): TestEntry => {
 
 function tryAddGenitiv(noun: NounDef, result: Record<string, TestEntryElement>) {
     setupQuestion(noun, result, `Ja imam + ${noun.word}`, 'Genitiv');
+    setupQuestion(noun, result, `On nema + ${noun.word}`, 'Genitiv');
+    setupQuestion(noun, result, `Život bez + ${noun.word} + je težak`, 'Genitiv');
+    setupQuestion(noun, result, `Imam strah od + ${noun.word}`, 'Genitiv');
+}
+
+function tryAddDativ(noun: NounDef, result: Record<string, TestEntryElement>) {
+    setupQuestion(noun, result, `Ja dajem to + ${noun.word}`, 'Dativ');
+    setupQuestion(noun, result, `On preporučuje to + ${noun.word}`, 'Dativ');
+    setupQuestion(noun, result, `Zavisim od + ${noun.word}`, 'Dativ');
+}
+
+function tryAddAkuzativ(noun: NounDef, result: Record<string, TestEntryElement>) {
+    setupQuestion(noun, result, `Ja volim + ${noun.word}`, 'Akuzativ');
+    setupQuestion(noun, result, `On ne voli + ${noun.word}`, 'Akuzativ');
+    setupQuestion(noun, result, `Mi vidimo + ${noun.word}`, 'Akuzativ');
+    setupQuestion(noun, result, `Vidim + ${noun.word} + svaki dan`, 'Akuzativ');
+}
+
+function tryAddInstrumental(noun: NounDef, result: Record<string, TestEntryElement>) {
+    setupQuestion(noun, result, `Ja radim s + ${noun.word}`, 'Instrumental');
+    setupQuestion(noun, result, `Manipulišem + ${noun.word}`, 'Instrumental');
+    setupQuestion(noun, result, `Pokrivam površinu sa + ${noun.word}`, 'Instrumental');
+    setupQuestion(noun, result, `Ukrašavam prostor pomoću + ${noun.word}`, 'Instrumental');
 }
 
 function tryAddLocativ(noun: NounDef, result: Record<string, TestEntryElement>) {
     setupQuestion(noun, result, `On priča o + ${noun.word}`, 'Lokativ');
+    setupQuestion(noun, result, `Razgovor o + ${noun.word} + bio dug`, 'Lokativ');
+    setupQuestion(noun, result, `Vest o + ${noun.word} + bila dobra`, 'Lokativ');
+    setupQuestion(noun, result, `Razmišljam o + ${noun.word}`, 'Lokativ');
 }
 
 function tryAddVokativ(noun: NounDef, result: Record<string, TestEntryElement>) {
