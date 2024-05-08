@@ -61,7 +61,17 @@
         <b-button @click="clickCyrillicButton" :variant="cyrillicButtonVariant">
           СРБ
         </b-button>
-      </div>
+    </div>
+
+    <div class="social-buttons">
+      <b-button @click="openGitHub" variant="link" class="social-button">
+        <img src="@/assets/github-mark.png" alt="GitHub">
+      </b-button>
+      <b-button @click="openTelegram" variant="link" class="social-button">
+        <img src="@/assets/telegram-logo.png" alt="Telegram">
+      </b-button>
+    </div>
+
     <footer class="footer">
       Version: {{ version }}
     </footer>
@@ -81,7 +91,7 @@ import { VerbDef, loadVerbs, createVerbMapping } from './logic/verbConjugationUt
 import verbsCsv from '!!raw-loader!./assets/verbs.csv';
 import { createNounCaseMapping } from './logic/nounCaseUtils';
 
-const version = '0.22';
+const version = '0.23';
 
 type State = 
   'menu' |
@@ -268,7 +278,15 @@ export default defineComponent({
 
     clickCyrillicButton() {
       this.langStyle = 'cyrillic';
-    }
+    },
+
+    openGitHub() {
+      window.open('https://github.com/KonH/serbian-playground', '_blank');
+    },
+    
+    openTelegram() {
+      window.open('https://t.me/serbian_playground', '_blank');
+    },
   },
   components: {
     BitiVerbFormTable,
@@ -303,5 +321,10 @@ export default defineComponent({
   width: 100%;
   padding: 10px;
   text-align: center;
+}
+
+.social-button img {
+  width: 40px;
+  height: auto;
 }
 </style>
