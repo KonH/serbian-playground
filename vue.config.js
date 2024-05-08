@@ -1,7 +1,5 @@
-const { defineConfig } = require('@vue/cli-service')
-module.exports = defineConfig({
+module.exports = {
   publicPath: '',
-  transpileDependencies: true,
   configureWebpack: {
     performance: {
       hints: false,
@@ -9,4 +7,4 @@ module.exports = defineConfig({
       maxAssetSize: 512000
     }
   },
-})
+}
