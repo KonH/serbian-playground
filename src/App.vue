@@ -2,65 +2,111 @@
   <div class="wrapper">
     <div class="container content">
       <div class="d-flex flex-column align-items-center" v-if="inMenu">
-        <b-button @click="openBitiVerbTable" variant="primary" class="mb-3">Biti verb forms table</b-button>
-        <b-button @click="openBitiVerbTest" variant="danger" class="mb-3">Biti verb forms test</b-button>
-        <b-button @click="openInvertBitiVerbTest" variant="danger" class="mb-5">Biti verb forms test (invert)</b-button>
+        <b-button @click="openBitiVerbTable" variant="primary" class="mb-3">
+          {{ translate('BitiVerbFormsTable') }}
+        </b-button>
+        <b-button @click="openBitiVerbTest" variant="danger" class="mb-3">
+          {{ translate('BitiVerbFormsTest') }}
+        </b-button>
+        <b-button @click="openInvertBitiVerbTest" variant="danger" class="mb-5">
+          {{  translate('BitiVerbFormsTestInvert') }}
+        </b-button>
       
-        <b-button @click="openPluralTable" variant="primary" class="mb-3">Plural forms table</b-button>
-        <b-button @click="openPluralTest" variant="danger" class="mb-5">Plural forms test</b-button>
+        <b-button @click="openPluralTable" variant="primary" class="mb-3">
+          {{ translate('PluralFormsTable') }}
+        </b-button>
+        <b-button @click="openPluralTest" variant="danger" class="mb-5">
+          {{ translate('PluralFormsTest') }}
+        </b-button>
 
-        <b-button @click="openTranslator" variant="primary" class="mb-5">SRB/СРБ translator</b-button>
+        <b-button @click="openTranslator" variant="primary" class="mb-5">
+          {{ translate('SrbTranslator') }}
+        </b-button>
 
-        <b-button @click="openVerbConjugationTest" variant="danger" class="mb-5">Verb conjugation test</b-button>
+        <b-button @click="openVerbConjugationTest" variant="danger" class="mb-5">
+          {{ translate('VerbConjugationTest') }}
+        </b-button>
 
-        <b-button @click="openNounCaseTest" variant="danger" class="mb-5">Noun case test</b-button>
+        <b-button @click="openNounCaseTest" variant="danger" class="mb-5">
+          {{ translate('NounCaseTest') }}
+        </b-button>
       </div>
       
       <div v-if="inBitiVerbFormTable" class="d-flex flex-column align-items-center">
-        <b-button @click="backToMenu" variant="secondary" class="mb-3">Back</b-button>
+        <b-button @click="backToMenu" variant="secondary" class="mb-3">
+          {{ translate('Back') }}
+        </b-button>
         <BitiVerbFormTable />
       </div>
       <div v-if="inBitiVerbFormTest" class="d-flex flex-column align-items-center">
-        <b-button @click="backToMenu" variant="secondary" class="mb-3">Back</b-button>
+        <b-button @click="backToMenu" variant="secondary" class="mb-3">
+          {{ translate('Back') }}
+        </b-button>
         <TestForm :mapping="bitiVerbFormMapping" :langStyle="langStyle" />
       </div>
       <div v-if="inInvertBitiVerbFormTest" class="d-flex flex-column align-items-center">
-        <b-button @click="backToMenu" variant="secondary" class="mb-3">Back</b-button>
+        <b-button @click="backToMenu" variant="secondary" class="mb-3">
+          {{ translate('Back') }}
+        </b-button>
         <TestForm :mapping="invertBitiVerbFormMapping" :langStyle="langStyle" />
       </div>
     
       <div v-if="inPluralTable" class="d-flex flex-column align-items-center">
-        <b-button @click="backToMenu" variant="secondary" class="mb-3">Back</b-button>
+        <b-button @click="backToMenu" variant="secondary" class="mb-3">
+          {{ translate('Back') }}
+        </b-button>
         <PluralFormTable />
       </div>
       <div v-if="inPluralFormTest" class="d-flex flex-column align-items-center">
-        <b-button @click="backToMenu" variant="secondary" class="mb-3">Back</b-button>
+        <b-button @click="backToMenu" variant="secondary" class="mb-3">
+          {{ translate('Back') }}
+        </b-button>
         <TestForm :mapping="pluralFormMapping" :langStyle="langStyle" />
       </div>
 
       <div v-if="inTranslator" class="d-flex flex-column align-items-center">
-        <b-button @click="backToMenu" variant="secondary" class="mb-3">Back</b-button>
+        <b-button @click="backToMenu" variant="secondary" class="mb-3">
+          {{ translate('Back') }}
+        </b-button>
         <TranslatorForm />
       </div>
 
       <div v-if="inVerbConjugationTest" class="d-flex flex-column align-items-center">
-        <b-button @click="backToMenu" variant="secondary" class="mb-3">Back</b-button>
+        <b-button @click="backToMenu" variant="secondary" class="mb-3">
+          {{ translate('Back') }}
+        </b-button>
         <TestForm :mapping="verbConjugationMapping" :langStyle="langStyle" />
       </div>
 
       <div v-if="inNounCaseTest" class="d-flex flex-column align-items-center">
-        <b-button @click="backToMenu" variant="secondary" class="mb-3">Back</b-button>
+        <b-button @click="backToMenu" variant="secondary" class="mb-3">
+          {{ translate('Back') }}
+        </b-button>
         <TestForm :mapping="nounCaseMapping" :langStyle="langStyle" />
       </div>
 
     </div>
+    
     <div v-if="inMenu">
+
+      <div>
+        <select v-model="selectedLanguage" @change="handleLanguageChange" class="form-select-sm">
+          <option value="en">English</option>
+          <option value="ru">Russian</option>
+          <option value="sr-Latn">Serbian (Latin)</option>
+          <option value="sr-Cyrl">Serbian (Cyrillic)</option>
+        </select>
+      </div>
+
+      <div>
         <b-button @click="clickLatinButton" :variant="latinButtonVariant" class="m-2">
           SRB
         </b-button>
         <b-button @click="clickCyrillicButton" :variant="cyrillicButtonVariant">
           СРБ
         </b-button>
+      </div>
+
     </div>
 
     <div class="social-buttons">
@@ -79,7 +125,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, ref } from 'vue';
 import BitiVerbFormTable from './components/BitiVerbFormTable.vue';
 import TestForm from './components/TestForm.vue';
 import PluralFormTable from './components/PluralFormTable.vue';
@@ -90,8 +136,10 @@ import { TestEntry, TestEntryElement } from './logic/TestEntry';
 import { VerbDef, loadVerbs, createVerbMapping } from './logic/verbConjugationUtils';
 import verbsCsv from '!!raw-loader!./assets/verbs.csv';
 import { createNounCaseMapping } from './logic/nounCaseUtils';
+import { useI18n } from 'vue-i18n';
+import { changeLanguage, getCurrentLanguage } from './logic/localizationUtils';
 
-const version = '0.24';
+const version = '0.25';
 
 type State = 
   'menu' |
@@ -133,6 +181,23 @@ export default defineComponent({
       state: 'menu' as State,
       langStyle: 'latin' as Style
     }
+  },
+  setup() {
+    const i18n = useI18n();
+    const translate = i18n.t;
+    const selectedLanguage = ref(getCurrentLanguage());
+    
+    const handleLanguageChange = (e: Event) => {
+      const newLang = (e.target as HTMLSelectElement).value;
+      changeLanguage(i18n, newLang);
+      selectedLanguage.value = newLang;
+    };
+    
+    return {
+      handleLanguageChange,
+      selectedLanguage,
+      translate
+    };
   },
   computed: {
     inMenu() {

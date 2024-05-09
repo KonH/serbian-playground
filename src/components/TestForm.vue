@@ -40,13 +40,14 @@
     </tr>
   </tbody>
 </table>
-Streak: {{ rightCounter }}
+{{ translate('Streak') }}: {{ rightCounter }}
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { TestEntry } from '@/logic/TestEntry';
 import { latinToCyrillic } from '@/logic/translatorLogic';
+import { useI18n } from 'vue-i18n';
 
 export default defineComponent({
   name: 'TestForm',
@@ -69,6 +70,13 @@ export default defineComponent({
       rightCounter: 0,
       animating: false
     }
+  },
+  setup() {
+    const i18n = useI18n();
+    const translate = i18n.t;
+    return {
+      translate
+    };
   },
   computed: {
     questionText() {
