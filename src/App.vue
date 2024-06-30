@@ -30,6 +30,11 @@
         <b-button @click="openNounCaseTest" variant="danger" class="mb-5">
           {{ translate('NounCaseTest') }}
         </b-button>
+
+        <b-button @click="openComparativeAdjectiveTest" variant="danger" class="mb-5">
+          {{ translate('ComparativeAdjectiveTest') }}
+        </b-button>
+        
       </div>
       
       <div v-if="inBitiVerbFormTable" class="d-flex flex-column align-items-center">
@@ -85,6 +90,13 @@
         <TestForm :mapping="nounCaseMapping" :langStyle="langStyle" />
       </div>
 
+      <div v-if="inComparativeAdjectiveTest" class="d-flex flex-column align-items-center">
+        <b-button @click="backToMenu" variant="secondary" class="mb-3">
+          {{ translate('Back') }}
+        </b-button>
+        <TestForm :mapping="comparativeAdjectiveMapping" :langStyle="langStyle" />
+      </div>
+
     </div>
     
     <div v-if="inMenu">
@@ -136,10 +148,12 @@ import { TestEntry, TestEntryElement } from './logic/TestEntry';
 import { VerbDef, loadVerbs, createVerbMapping } from './logic/verbConjugationUtils';
 import verbsCsv from '!!raw-loader!./assets/verbs.csv';
 import { createNounCaseMapping } from './logic/nounCaseUtils';
+import adjectivesCsv from '!!raw-loader!./assets/adjectives.csv';
+import { AdjectiveDef, loadAdjectives, createComparativeAdjectiveMapping } from './logic/adjectiveUtils';
 import { useI18n } from 'vue-i18n';
 import { changeLanguage, getCurrentLanguage } from './logic/localizationUtils';
 
-const version = '0.25';
+const version = '0.26';
 
 type State = 
   'menu' |
@@ -150,7 +164,8 @@ type State =
   'plural-form-test' |
   'translator' |
   'verb-conjugation-test' |
-  'noun-case-test';
+  'noun-case-test' |
+  'comparative-adjective-test';
 
 type Style = 'latin' | 'cyrillic';
 
@@ -172,6 +187,9 @@ loadNouns(nounsCsv, nouns);
 
 const verbs: VerbDef[] = [];
 loadVerbs(verbsCsv, verbs);
+
+const adjectives: AdjectiveDef[] = [];
+loadAdjectives(adjectivesCsv, adjectives);
 
 export default defineComponent({
   name: 'App',
@@ -236,6 +254,10 @@ export default defineComponent({
       return this.state == 'noun-case-test';
     },
 
+    inComparativeAdjectiveTest() {
+      return this.state == 'comparative-adjective-test';
+    },
+
     bitiVerbFormMapping() {
       const mapping: Record<string, Record<string, boolean>> = {};
       const allValues = Object.values(bitiForms);
@@ -285,7 +307,11 @@ export default defineComponent({
 
     nounCaseMapping() {
       return createNounCaseMapping(nouns);
-    }
+    },
+
+    comparativeAdjectiveMapping() {
+      return createComparativeAdjectiveMapping(adjectives, nouns, adj => this.translate(`adjective_${adj.word}`));
+    },
   },
   methods: {
     openBitiVerbTable() {
@@ -318,6 +344,10 @@ export default defineComponent({
 
     openNounCaseTest() {
       this.state = 'noun-case-test';
+    },
+
+    openComparativeAdjectiveTest() {
+      this.state = 'comparative-adjective-test';
     },
     
     backToMenu() {
