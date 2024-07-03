@@ -2,19 +2,14 @@
   <div class="wrapper">
     <div class="container content">
       <div class="d-flex flex-column align-items-center" v-if="inMenu">
-        <b-button @click="openBitiVerbTable" variant="primary" class="mb-3">
-          {{ translate('BitiVerbFormsTable') }}
-        </b-button>
         <b-button @click="openBitiVerbTest" variant="danger" class="mb-3">
           {{ translate('BitiVerbFormsTest') }}
         </b-button>
+        
         <b-button @click="openInvertBitiVerbTest" variant="danger" class="mb-5">
           {{  translate('BitiVerbFormsTestInvert') }}
         </b-button>
       
-        <b-button @click="openPluralTable" variant="primary" class="mb-3">
-          {{ translate('PluralFormsTable') }}
-        </b-button>
         <b-button @click="openPluralTest" variant="danger" class="mb-5">
           {{ translate('PluralFormsTest') }}
         </b-button>
@@ -37,12 +32,6 @@
         
       </div>
       
-      <div v-if="inBitiVerbFormTable" class="d-flex flex-column align-items-center">
-        <b-button @click="backToMenu" variant="secondary" class="mb-3">
-          {{ translate('Back') }}
-        </b-button>
-        <BitiVerbFormTable />
-      </div>
       <div v-if="inBitiVerbFormTest" class="d-flex flex-column align-items-center">
         <b-button @click="backToMenu" variant="secondary" class="mb-3">
           {{ translate('Back') }}
@@ -56,12 +45,6 @@
         <TestForm :mapping="invertBitiVerbFormMapping" :langStyle="langStyle" />
       </div>
     
-      <div v-if="inPluralTable" class="d-flex flex-column align-items-center">
-        <b-button @click="backToMenu" variant="secondary" class="mb-3">
-          {{ translate('Back') }}
-        </b-button>
-        <PluralFormTable />
-      </div>
       <div v-if="inPluralFormTest" class="d-flex flex-column align-items-center">
         <b-button @click="backToMenu" variant="secondary" class="mb-3">
           {{ translate('Back') }}
@@ -138,9 +121,7 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
-import BitiVerbFormTable from './components/BitiVerbFormTable.vue';
 import TestForm from './components/TestForm.vue';
-import PluralFormTable from './components/PluralFormTable.vue';
 import TranslatorForm from './components/TranslatorForm.vue';
 import { NounDef, loadNouns, createNounMapping } from './logic/pluralFormUtils';
 import nounsCsv from '!!raw-loader!./assets/nouns.csv';
@@ -157,10 +138,8 @@ const version = '0.26';
 
 type State = 
   'menu' |
-  'biti-verb-form-table' |
   'biti-verb-form-test' |
   'invert-biti-verb-form-test' |
-  'plural-form-table' |
   'plural-form-test' |
   'translator' |
   'verb-conjugation-test' |
@@ -222,20 +201,12 @@ export default defineComponent({
       return this.state == 'menu';
     },
 
-    inBitiVerbFormTable() {
-      return this.state == 'biti-verb-form-table';
-    },
-
     inBitiVerbFormTest() {
       return this.state == 'biti-verb-form-test';
     },
 
     inInvertBitiVerbFormTest() {
       return this.state == 'invert-biti-verb-form-test';
-    },
-
-    inPluralTable() {
-      return this.state == 'plural-form-table';
     },
 
     inPluralFormTest() {
@@ -314,20 +285,12 @@ export default defineComponent({
     },
   },
   methods: {
-    openBitiVerbTable() {
-      this.state = 'biti-verb-form-table';
-    },
-
     openBitiVerbTest() {
       this.state = 'biti-verb-form-test';
     },
 
     openInvertBitiVerbTest() {
       this.state = 'invert-biti-verb-form-test';
-    },
-
-    openPluralTable() {
-      this.state = 'plural-form-table';
     },
 
     openPluralTest() {
@@ -384,8 +347,6 @@ export default defineComponent({
     },
   },
   components: {
-    BitiVerbFormTable,
-    PluralFormTable,
     TestForm,
     TranslatorForm
   }
