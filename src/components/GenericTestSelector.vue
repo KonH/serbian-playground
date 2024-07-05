@@ -9,6 +9,7 @@
       v-model="selectedCategories"
       :options="allTranslatedCategories"
       stacked
+      class="text-nowrap"
     ></b-form-checkbox-group>
   </b-form-group>
   
