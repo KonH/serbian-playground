@@ -6,7 +6,7 @@ import { createNounMapping, loadNouns, NounDef } from "./pluralFormUtils";
 import { createVerbMapping, loadVerbs, VerbDef } from "./verbConjugationUtils";
 import { createNounCaseMapping } from "./nounCaseUtils";
 import { TestEntry, TestEntryElement } from "./TestEntry";
-import { AdjectiveDef, createComparativeAdjectiveMapping, loadAdjectives } from "./adjectiveUtils";
+import { AdjectiveDef, createComparativeAdjectiveMapping, createSuperlativeAdjectiveMapping, loadAdjectives } from "./adjectiveUtils";
 
 const bitiForms: Record<string, string> = {
     'ja': 'sam',
@@ -56,6 +56,15 @@ export function createGenericMappingForCategories(categories: TestCategory[], tr
 
             case 'ComparativeAdjectiveTest': {
                 const newMapping = createComparativeAdjectiveMapping(
+                    adjectives,
+                    nouns,
+                    adj => translate(`adjective_${adj.word}`));
+                add(mapping, newMapping, category);
+                break;
+            }
+
+            case 'SuperlativeAdjectiveTest': {
+                const newMapping = createSuperlativeAdjectiveMapping(
                     adjectives,
                     nouns,
                     adj => translate(`adjective_${adj.word}`));

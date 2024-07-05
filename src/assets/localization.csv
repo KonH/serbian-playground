@@ -7,6 +7,7 @@ SrbTranslator,SRB/СРБ translator,SRB/СРБ переводчик,SRB/СРБ p
 VerbConjugationTest,Verb conjugation test,Тест спряжения глагола,Test konjugacije glagola,Тест конјугације глагола
 NounCaseTest,Noun case test,Тест падежа существительного,Test padeža imenice,Тест падежа именице
 ComparativeAdjectiveTest,Comparative adjective test,Тест сравнительных форм прилагательных,Test komparacija prideva,Тест компарације придева
+SuperlativeAdjectiveTest,Superlative adjective test,Тест превосходной степени прилагательных,Test superlativa prideva,Тест суперлатива придева
 Back,Back,Назад,Nazad,Назад
 Streak,Streak,Правильных ответов,Pravilnih odgovora,Правилних одговора
 EnterLatnText,Enter SRB (latin) text,Введите SRB (latin) текст,Unesite SRB (latin) tekst,Унесите SRB (latin) текст

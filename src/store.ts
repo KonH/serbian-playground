@@ -16,7 +16,8 @@ export const AllTestCategories = [
   'PluralFormsTest',
   'VerbConjugationTest',
   'NounCaseTest',
-  'ComparativeAdjectiveTest'
+  'ComparativeAdjectiveTest',
+  'SuperlativeAdjectiveTest'
 ] as const;
 
 export type TestCategoryTuple = typeof AllTestCategories;

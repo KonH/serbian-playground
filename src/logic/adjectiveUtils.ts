@@ -83,6 +83,31 @@ function tryAddComparativeCase(adjective: AdjectiveDef, firstNoun: NounDef, seco
     setupQuestion(adjective, comparativeForm, secondNoun, question, translate, result);
 }
 
+export const createSuperlativeAdjectiveMapping = (adjectives: AdjectiveDef[], nouns: NounDef[], translate: AdjectiveTranslate): TestEntry => {
+    const result: TestEntry = { questions: {} };
+    // Standard form: adjective + noun, ali + noun2 + superlative
+    const firstNounsSubset = nouns.sort(() => Math.random() - Math.random()).slice(0, 10);
+    const secondNounsSubset = nouns.sort(() => Math.random() - Math.random()).slice(0, 10);
+    for (const adjective of adjectives) {    
+        for (const firstNoun of firstNounsSubset) {
+            for (const secondNoun of secondNounsSubset) {
+                if (firstNoun.word === secondNoun.word) {
+                    continue;
+                }
+                tryAddSuperlativeCase(adjective, firstNoun, secondNoun, translate, result.questions);
+            }
+        }
+    }
+    return result;
+};
+
+function tryAddSuperlativeCase(adjective: AdjectiveDef, firstNoun: NounDef, secondNoun: NounDef, translate: AdjectiveTranslate, result: Record<string, TestEntryElement>) {
+    const simpleForm = selectAdjectiveForm(adjective, firstNoun);
+    const superlativeForm = selectSuperlativeForm(adjective, secondNoun);
+    const question = formatQuestion(simpleForm, firstNoun, secondNoun);
+    setupQuestion(adjective, superlativeForm, secondNoun, question, translate, result);
+}
+
 function selectAdjectiveForm(adjective: AdjectiveDef, noun: NounDef): string {
     switch (noun.gender) {
         case "m":
@@ -104,6 +129,19 @@ function selectComparativeForm(adjective: AdjectiveDef, noun: NounDef): string {
             return adjective.comparative_f;
         case "n":
             return adjective.comparative_n;
+        default:
+            return "";
+    }
+}
+
+function selectSuperlativeForm(adjective: AdjectiveDef, noun: NounDef): string {
+    switch (noun.gender) {
+        case "m":
+            return adjective.superlative_m;
+        case "f":
+            return adjective.superlative_f;
+        case "n":
+            return adjective.superlative_n;
         default:
             return "";
     }
