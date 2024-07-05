@@ -1,13 +1,20 @@
 <template>
-<table class="test-table table table-bordered">
+<table class="test-table table mt-3">
   <thead>
     <tr>
       <th colspan="2">
         <div>
-          <div>{{ questionText }}?</div>
+          <div class="mt-1 p-1 bg-light-blue rounded">
+            {{ questionCategory }}
+          </div>
+          <div class="mt-2 m-1">
+            {{ questionText }}?
+          </div>
           <div>
             <b-button v-if="inlineHint !== ''" variant="secondary" @click="toggleInlineHint">?</b-button>
-            <div v-if="showInlineHint">{{ inlineHint }}</div>
+            <div v-if="showInlineHint" class="mt-1 p-2 bg-light-yellow rounded">
+              {{ inlineHint }}
+            </div>
           </div>
         </div>
       </th>
@@ -16,31 +23,33 @@
   <tbody>
     <tr>
       <td class="column-width">
-        <b-button variant="info" @click="e => checkAnswer(e, 0)" v-if="answers.length > 0">
+        <b-button variant="info" class="p-3" @click="e => checkAnswer(e, 0)" v-if="answers.length > 0">
           {{ answerTexts[0] }}
         </b-button>
       </td>
       <td class="column-width">
-        <b-button variant="info" @click="e => checkAnswer(e, 1)" v-if="answers.length > 1">
+        <b-button variant="info" class="p-3" @click="e => checkAnswer(e, 1)" v-if="answers.length > 1">
           {{ answerTexts[1] }}
         </b-button>
       </td>
     </tr>
     <tr>
       <td class="column-width">
-        <b-button variant="info" @click="e => checkAnswer(e, 2)" v-if="answers.length > 2">
+        <b-button variant="info" class="p-3" @click="e => checkAnswer(e, 2)" v-if="answers.length > 2">
           {{ answerTexts[2] }}
         </b-button>
       </td>
       <td class="column-width">
-        <b-button variant="info" @click="e => checkAnswer(e, 3)" v-if="answers.length > 3">
+        <b-button variant="info" class="p-3" @click="e => checkAnswer(e, 3)" v-if="answers.length > 3">
           {{ answerTexts[3] }}
         </b-button>
       </td>
     </tr>
   </tbody>
 </table>
-{{ translate('Streak') }}: {{ rightCounter }}
+<div class="mt-5">
+  {{ translate('Streak') }}: {{ rightCounter }}
+</div>
 </template>
 
 <script lang="ts">
@@ -63,6 +72,7 @@ export default defineComponent({
   },
   data: () => {
     return {
+      category: '',
       question: '',
       inlineHint: '',
       showInlineHint: false,
@@ -85,6 +95,11 @@ export default defineComponent({
       }
       return this.question;
     },
+
+    questionCategory() {
+      return this.translate(this.category);
+    },
+
     answerTexts() {
       if (this.langStyle == 'cyrillic') {
         return this.answers.map(answer => latinToCyrillic(answer));
@@ -139,6 +154,7 @@ export default defineComponent({
         questions = questions.filter(question => question !== this.question);
       }
       this.question = questions[Math.floor(Math.random() * questions.length)];
+      this.category = this.mapping.questions[this.question].category ?? '';
       const answerRecords = this.mapping.questions[this.question].answers;
       const answerKeys = Object.keys(answerRecords);
       const correctAnswer = answerKeys.find(key => answerRecords[key]) ?? '';
@@ -173,6 +189,10 @@ export default defineComponent({
   max-width: 600px;
 }
 
+.test-table tr {
+  border: hidden;
+}
+
 .column-width {
   width: 50%;
 }
@@ -195,5 +215,13 @@ export default defineComponent({
   0% { background-color: initial; }
   50% { background-color: red; }
   100% { background-color: initial; }
+}
+
+.bg-light-blue {
+  background-color: #cce5ff;
+}
+
+.bg-light-yellow {
+  background-color: #fff3cd;
 }
 </style>

@@ -1,4 +1,7 @@
 <template>
+  <b-button @click="backToMenu" variant="secondary" class="mb-3">
+    {{ translate('Back') }}
+  </b-button>
   <div class="container mt-3">
     <div class="mb-3">
       <label for="latinInput" class="form-label">SRB:</label>
@@ -21,9 +24,9 @@
 import { defineComponent } from 'vue';
 import { latinToCyrillic, cyrillicToLatin } from '@/logic/translatorLogic';
 import { useI18n } from 'vue-i18n';
+import { mapActions } from 'vuex';
 
 export default defineComponent({
-  name: 'TranslatorForm',
   data: () => {
     return {
       latinText: '',
@@ -38,6 +41,12 @@ export default defineComponent({
     };
   },
   methods: {
+    ...mapActions(['updateAppState']),
+
+    backToMenu() {
+      this.updateAppState('mainMenu');
+    },
+
     convertToCyrillic() {
        this.cyrillicText = latinToCyrillic(this.latinText);
     },
