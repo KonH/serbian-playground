@@ -48,7 +48,12 @@
   </tbody>
 </table>
 <div class="mt-5">
-  {{ translate('Streak') }}: {{ rightCounter }}
+  <div>
+    {{ translate('Streak') }}: {{ rightCounter }}
+  </div>
+  <div>
+    {{ translate('TotalQuestions') }}: {{ totalCounter }}
+  </div>
 </div>
 </template>
 
@@ -78,6 +83,7 @@ export default defineComponent({
       showInlineHint: false,
       answers: [] as string[],
       rightCounter: 0,
+      totalCounter: 0,
       animating: false
     }
   },
@@ -136,14 +142,15 @@ export default defineComponent({
 
     onRightClick() {
       this.rightCounter++;
+      this.totalCounter++;
       this.generateNewQuestion();
     },
     
     onWrongClick() {
-      this.resetCounter();
+      this.resetStreakCounter();
     },
     
-    resetCounter() {
+    resetStreakCounter() {
       this.rightCounter = 0;
     },
     
@@ -178,7 +185,7 @@ export default defineComponent({
     }
   },
   mounted() {
-    this.resetCounter();
+    this.resetStreakCounter();
     this.generateNewQuestion();
   }
 });
