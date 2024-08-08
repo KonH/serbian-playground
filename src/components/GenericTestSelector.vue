@@ -13,7 +13,7 @@
     ></b-form-checkbox-group>
   </b-form-group>
   
-  <b-button @click="proceedToTest" variant="primary" class="mt-3">
+  <b-button @click="proceedToTest" :disabled="isStartTestDisabled" variant="primary" class="mt-3">
     {{ translate('StartTest') }}
   </b-button>
 
@@ -50,6 +50,10 @@ export default defineComponent({
       set(value: TestCategory[]) {
         this.updateSelectedTestCategories(value);
       }
+    },
+
+    isStartTestDisabled(): boolean {
+      return this.selectedCategories.length === 0;
     }
   },
   methods: {
