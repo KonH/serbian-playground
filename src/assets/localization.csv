@@ -9,8 +9,11 @@ NounCaseTest,Noun case test,Тест падежа существительног
 ComparativeAdjectiveTest,Comparative adjective test,Тест сравнительных форм прилагательных,Test komparacija prideva,Тест компарације придева
 SuperlativeAdjectiveTest,Superlative adjective test,Тест превосходной степени прилагательных,Test superlativa prideva,Тест суперлатива придева
 Back,Back,Назад,Nazad,Назад
+Finish,Finish,Закончить,Završi,Заврши
 Streak,Streak,Правильных ответов,Pravilnih odgovora,Правилних одговора
 TotalQuestions,Total questions,Всего вопросов,Ukupno pitanja,Укупно питања
+RightAnswers,Right answers,Правильных ответов,Pravilnih odgovora,Правилних одговора
+Finished,Finished,Завершено,Završeno,Завршено
 EnterLatnText,Enter SRB (latin) text,Введите SRB (latin) текст,Unesite SRB (latin) tekst,Унесите SRB (latin) текст
 EnterCyrlText,Enter СРБ (cyrillic) text,Введите СРБ (cyrillic) текст,Unesite СРB (cyrillic) tekst,Унесите СРБ (cyrillic) текст
 ConvertToLatn,Convert to SRB (latin),Конвертировать в SRB (latin),Konvertuj u SRB (latin),Конвертуј у SRB (latin)

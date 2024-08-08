@@ -5,4 +5,5 @@ export const stateToComponentMap = {
     'translator': defineAsyncComponent(() => import('./TranslatorForm.vue')),
     'genericTestSelector': defineAsyncComponent(() => import('./GenericTestSelector.vue')),
     'genericTest': defineAsyncComponent(() => import('./GenericTest.vue')),
+    'testResults': defineAsyncComponent(() => import('./TestResults.vue')),
 };

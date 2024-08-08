@@ -49,11 +49,14 @@
 </table>
 <div class="mt-5">
   <div>
-    {{ translate('Streak') }}: {{ rightCounter }}
+    {{ translate('Streak') }}: {{ rightStreakCounter }}
   </div>
   <div>
     {{ translate('TotalQuestions') }}: {{ totalCounter }}
   </div>
+  <b-button variant="secondary" @click="finish" class="mt-2">
+    {{ translate('Finish') }}
+  </b-button>
 </div>
 </template>
 
@@ -61,7 +64,9 @@
 import { defineComponent } from 'vue';
 import { TestEntry } from '@/logic/TestEntry';
 import { latinToCyrillic } from '@/logic/translatorLogic';
+import { mapActions } from 'vuex';
 import { useI18n } from 'vue-i18n';
+import { TestCategoryData } from '@/store';
 
 export default defineComponent({
   name: 'TestForm',
@@ -82,9 +87,12 @@ export default defineComponent({
       inlineHint: '',
       showInlineHint: false,
       answers: [] as string[],
-      rightCounter: 0,
+      rightStreakCounter: 0,
+      firstTimeRightCounter: 0,
       totalCounter: 0,
-      animating: false
+      animating: false,
+      isFirstClick: true,
+      categoryStats: {} as Record<string, TestCategoryData>
     }
   },
   setup() {
@@ -114,6 +122,8 @@ export default defineComponent({
     }
   },
   methods: {
+    ...mapActions(['updateAppState', 'updateLastTestResults']),
+
     checkAnswer(e: MouseEvent, index: number) {
       if (this.animating) {
         return;
@@ -141,17 +151,35 @@ export default defineComponent({
     },
 
     onRightClick() {
-      this.rightCounter++;
+      this.rightStreakCounter++;
       this.totalCounter++;
+      this.updateCategoryStats(this.category, this.isFirstClick);
+      if (this.isFirstClick) {
+        this.firstTimeRightCounter++;
+      }
       this.generateNewQuestion();
     },
     
     onWrongClick() {
       this.resetStreakCounter();
+      this.isFirstClick = false;
     },
     
     resetStreakCounter() {
-      this.rightCounter = 0;
+      this.rightStreakCounter = 0;
+    },
+
+    updateCategoryStats(category: string, isFirstClick: boolean) {
+      if (this.categoryStats[category] == null) {
+        this.categoryStats[category] = {
+          totalQuestions: 0,
+          rightAnswers: 0
+        };
+      }
+      this.categoryStats[category].totalQuestions++;
+      if (isFirstClick) {
+        this.categoryStats[category].rightAnswers++;
+      }
     },
     
     generateNewQuestion() {
@@ -170,6 +198,7 @@ export default defineComponent({
       this.answers = this.shuffleArray([correctAnswer, ...incorrectAnswers]);
       this.inlineHint = this.mapping.questions[this.question].inlineHint;
       this.showInlineHint = false;
+      this.isFirstClick = true;
     },
     
     shuffleArray(array: string[]) {
@@ -182,6 +211,15 @@ export default defineComponent({
 
     toggleInlineHint() {
       this.showInlineHint = !this.showInlineHint;
+    },
+
+    finish() {
+      this.updateLastTestResults({
+        totalQuestions: this.totalCounter,
+        rightAnswers: this.firstTimeRightCounter,
+        testCategories: this.categoryStats 
+      });
+      this.updateAppState('testResults');
     }
   },
   mounted() {
