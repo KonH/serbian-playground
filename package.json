@@ -4,18 +4,20 @@
   "private": true,
   "scripts": {
     "serve": "concurrently \"npm run test:watch\" \"vue-cli-service serve\"",
-    "test:watch": "jest --watch",
     "build": "vue-cli-service build",
-    "test": "jest test",
     "lint": "vue-cli-service lint",
+    "deploy": "npm run build && shx rm -rf ../konh.github.io/custom/serbian-playground/* && shx cp -r dist/* ../konh.github.io/custom/serbian-playground",
     "convert_verbs": "ts-node src/scripts/convert_verbs.ts",
-    "deploy": "npm run build && shx rm -rf ../konh.github.io/custom/serbian-playground/* && shx cp -r dist/* ../konh.github.io/custom/serbian-playground"
+    "test": "jest test",
+    "test:watch": "jest --watch"
   },
   "dependencies": {
+    "@popperjs/core": "^2.11.8",
     "bootstrap": "~5.3.0",
     "bootstrap-vue-3": "~0.5.1",
     "core-js": "~3.37.0",
     "papaparse": "~5.4.0",
+    "register-service-worker": "^1.7.2",
     "vue": "~3.4.0",
     "vue-i18n": "~9.13.0",
     "vuex": "~4.1.0"
@@ -28,6 +30,7 @@
     "@typescript-eslint/parser": "~7.8.0",
     "@vue/cli-plugin-babel": "~5.0.0",
     "@vue/cli-plugin-eslint": "~5.0.0",
+    "@vue/cli-plugin-pwa": "~5.0.0",
     "@vue/cli-plugin-typescript": "~5.0.0",
     "@vue/cli-service": "~5.0.0",
     "@vue/eslint-config-typescript": "~13.0.0",
