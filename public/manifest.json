@@ -36,11 +36,6 @@
             "src": "/img/icons/mstile-150x150.png",
             "sizes": "150x150",
             "type": "image/png"
-        },
-        {
-            "src": "/img/icons/safari-pinned-tab.svg",
-            "sizes": "any",
-            "type": "image/svg+xml"
         }
     ]
 }
