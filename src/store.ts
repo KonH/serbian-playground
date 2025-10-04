@@ -1,6 +1,6 @@
 import { createStore } from 'vuex';
 
-const appVersion = '0.30';
+const appVersion = '0.31';
 
 export type LangStyle = 
   'latin' |
