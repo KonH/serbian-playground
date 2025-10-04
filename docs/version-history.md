@@ -10,3 +10,6 @@
 ## 0.30
 - Test Results Storage [docs/wip/2025_10_04_testResultsStorage/prompt.md]
 
+## 0.31
+- Fix: Last answer tracking bug [docs/wip/2025_10_04_lastAnswerTrackingFix/prompt.md]
+

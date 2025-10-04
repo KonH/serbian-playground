@@ -136,6 +136,12 @@ export default defineComponent({
   methods: {
     ...mapActions(['updateAppState', 'updateLastTestResults']),
 
+    getQuestionTextInLatin(): string {
+      return this.langStyle === 'cyrillic' 
+        ? cyrillicToLatin(this.question) 
+        : this.question;
+    },
+
     checkAnswer(e: MouseEvent, index: number) {
       if (this.animating) {
         return;
@@ -164,42 +170,70 @@ export default defineComponent({
 
     onRightClick() {
       this.rightStreakCounter++;
-      this.totalCounter++;
-      this.updateCategoryStats(this.category, this.isFirstClick);
       
-      // Track question result
       const currentAttempts = this.attemptCounts.get(this.question) || 0;
       const attemptsCount = currentAttempts + 1; // Add the successful attempt
+      const questionTextLatin = this.getQuestionTextInLatin();
       
-      // Store question text in Latin for consistency
-      const questionTextLatin = this.langStyle === 'cyrillic' 
-        ? cyrillicToLatin(this.question) 
-        : this.question;
+      // Check if question already tracked (from previous wrong attempts)
+      const existingQuestionIndex = this.questionHistory.findIndex(
+        q => q.questionText === questionTextLatin
+      );
       
-      const questionResult: QuestionResult = {
-        category: this.category,
-        questionText: questionTextLatin,
-        inlineHint: this.inlineHint,
-        relatedWords: extractRelatedWords(questionTextLatin),
-        successOnFirstTry: this.isFirstClick,
-        attemptsCount: attemptsCount
-      };
-      
-      this.questionHistory.push(questionResult);
-      
-      if (this.isFirstClick) {
+      if (existingQuestionIndex !== -1) {
+        // Update existing result - user eventually got it right
+        this.questionHistory[existingQuestionIndex].attemptsCount = attemptsCount;
+        // successOnFirstTry already set to false, keep it
+      } else {
+        // First try correct - track new result
+        const questionResult: QuestionResult = {
+          category: this.category,
+          questionText: questionTextLatin,
+          inlineHint: this.inlineHint,
+          relatedWords: extractRelatedWords(questionTextLatin),
+          successOnFirstTry: true,
+          attemptsCount: 1
+        };
+        this.questionHistory.push(questionResult);
+        this.totalCounter++;
+        this.updateCategoryStats(this.category, true);
         this.firstTimeRightCounter++;
       }
+      
       this.generateNewQuestion();
     },
     
     onWrongClick() {
-      this.resetStreakCounter();
-      this.isFirstClick = false;
-      
-      // Increment attempt counter for current question
       const currentAttempts = this.attemptCounts.get(this.question) || 0;
       this.attemptCounts.set(this.question, currentAttempts + 1);
+      
+      const questionTextLatin = this.getQuestionTextInLatin();
+      
+      // Check if this question is already tracked
+      const existingQuestionIndex = this.questionHistory.findIndex(
+        q => q.questionText === questionTextLatin
+      );
+      
+      if (existingQuestionIndex === -1) {
+        // First attempt on this question - track it
+        const questionResult: QuestionResult = {
+          category: this.category,
+          questionText: questionTextLatin,
+          inlineHint: this.inlineHint,
+          relatedWords: extractRelatedWords(questionTextLatin),
+          successOnFirstTry: false,
+          attemptsCount: currentAttempts + 1
+        };
+        this.questionHistory.push(questionResult);
+        this.totalCounter++;
+        this.updateCategoryStats(this.category, false);
+      } else {
+        // Update existing question's attempt count
+        this.questionHistory[existingQuestionIndex].attemptsCount = currentAttempts + 1;
+      }
+      
+      this.resetStreakCounter();
+      this.isFirstClick = false;
     },
     
     resetStreakCounter() {
