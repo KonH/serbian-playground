@@ -63,10 +63,18 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { TestEntry } from '@/logic/TestEntry';
-import { latinToCyrillic } from '@/logic/translatorLogic';
-import { mapActions } from 'vuex';
+import { latinToCyrillic, cyrillicToLatin } from '@/logic/translatorLogic';
+import { mapActions, mapGetters } from 'vuex';
 import { useI18n } from 'vue-i18n';
 import { TestCategoryData } from '@/store';
+import { 
+  saveTestSession, 
+  generateSessionId, 
+  extractRelatedWords,
+  QuestionResult,
+  TestSession,
+  CategorySummary
+} from '@/logic/testResultsStorage';
 
 export default defineComponent({
   name: 'TestForm',
@@ -92,7 +100,9 @@ export default defineComponent({
       totalCounter: 0,
       animating: false,
       isFirstClick: true,
-      categoryStats: {} as Record<string, TestCategoryData>
+      categoryStats: {} as Record<string, TestCategoryData>,
+      questionHistory: [] as QuestionResult[],
+      attemptCounts: new Map<string, number>()
     }
   },
   setup() {
@@ -103,6 +113,8 @@ export default defineComponent({
     };
   },
   computed: {
+    ...mapGetters(['appVersion']),
+    
     questionText() {
       if (this.langStyle == 'cyrillic') {
         return latinToCyrillic(this.question);
@@ -154,6 +166,27 @@ export default defineComponent({
       this.rightStreakCounter++;
       this.totalCounter++;
       this.updateCategoryStats(this.category, this.isFirstClick);
+      
+      // Track question result
+      const currentAttempts = this.attemptCounts.get(this.question) || 0;
+      const attemptsCount = currentAttempts + 1; // Add the successful attempt
+      
+      // Store question text in Latin for consistency
+      const questionTextLatin = this.langStyle === 'cyrillic' 
+        ? cyrillicToLatin(this.question) 
+        : this.question;
+      
+      const questionResult: QuestionResult = {
+        category: this.category,
+        questionText: questionTextLatin,
+        inlineHint: this.inlineHint,
+        relatedWords: extractRelatedWords(questionTextLatin),
+        successOnFirstTry: this.isFirstClick,
+        attemptsCount: attemptsCount
+      };
+      
+      this.questionHistory.push(questionResult);
+      
       if (this.isFirstClick) {
         this.firstTimeRightCounter++;
       }
@@ -163,6 +196,10 @@ export default defineComponent({
     onWrongClick() {
       this.resetStreakCounter();
       this.isFirstClick = false;
+      
+      // Increment attempt counter for current question
+      const currentAttempts = this.attemptCounts.get(this.question) || 0;
+      this.attemptCounts.set(this.question, currentAttempts + 1);
     },
     
     resetStreakCounter() {
@@ -199,6 +236,11 @@ export default defineComponent({
       this.inlineHint = this.mapping.questions[this.question].inlineHint;
       this.showInlineHint = false;
       this.isFirstClick = true;
+      
+      // Initialize attempt counter for new question
+      if (!this.attemptCounts.has(this.question)) {
+        this.attemptCounts.set(this.question, 0);
+      }
     },
     
     shuffleArray(array: string[]) {
@@ -214,6 +256,40 @@ export default defineComponent({
     },
 
     finish() {
+      // Build category summaries
+      const categorySummaries: CategorySummary[] = Object.keys(this.categoryStats).map(category => {
+        const stats = this.categoryStats[category];
+        return {
+          category: category,
+          totalQuestions: stats.totalQuestions,
+          correctAnswers: stats.rightAnswers,
+          successRatio: stats.totalQuestions > 0 
+            ? Math.round((stats.rightAnswers / stats.totalQuestions) * 100 * 100) / 100
+            : 0
+        };
+      });
+      
+      // Calculate overall success ratio
+      const successRatio = this.totalCounter > 0
+        ? Math.round((this.firstTimeRightCounter / this.totalCounter) * 100 * 100) / 100
+        : 0;
+      
+      // Build complete test session
+      const testSession: TestSession = {
+        sessionId: generateSessionId(),
+        sessionDate: new Date().toISOString(),
+        appVersion: this.appVersion as string,
+        totalQuestions: this.totalCounter,
+        successCount: this.firstTimeRightCounter,
+        successRatio: successRatio,
+        categories: categorySummaries,
+        questions: this.questionHistory
+      };
+      
+      // Save to localStorage
+      saveTestSession(testSession);
+      
+      // Keep existing functionality for backward compatibility
       this.updateLastTestResults({
         totalQuestions: this.totalCounter,
         rightAnswers: this.firstTimeRightCounter,

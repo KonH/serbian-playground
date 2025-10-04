@@ -52,6 +52,7 @@ The application uses a single centralized Vuex store with the following state:
 - `langStyle` - Script preference (Latin/Cyrillic)
 - `selectedTestCategories` - User's test selection
 - `appLocale` - UI language preference
+- `serbianPlayground_testResults` - Test session history (see Test Results Persistence below)
 
 **App States** (Navigation):
 - `mainMenu` - Main menu screen
@@ -119,6 +120,7 @@ Each test category has dedicated utilities:
 - **adjectiveUtils.ts** - Comparative and superlative forms
 - **translatorLogic.ts** - Bidirectional Latin-Cyrillic conversion
 - **localizationUtils.ts** - CSV-based i18n setup
+- **testResultsStorage.ts** - Persistent storage of test session results in localStorage
 
 #### Test Entry Data Model
 
@@ -174,7 +176,59 @@ PapaCSV parses the raw CSV strings into typed objects.
 3. Language stored in localStorage
 4. Components use `useI18n()` hook for translations
 
-### 6. Script Switching (Latin ↔ Cyrillic)
+### 6. Test Results Persistence
+
+**Feature**: Test session results are automatically saved to localStorage for future analysis
+
+**Location**: `src/logic/testResultsStorage.ts`
+
+**Storage Key**: `serbianPlayground_testResults`
+
+**Data Structure**:
+```typescript
+{
+  version: "1.0",              // Storage format version
+  sessions: [
+    {
+      sessionId: string,       // Unique session identifier
+      sessionDate: string,     // ISO 8601 datetime
+      appVersion: string,      // App version at time of test
+      totalQuestions: number,
+      successCount: number,    // Correct on first try
+      successRatio: number,    // Percentage (0-100)
+      categories: [            // Per-category breakdown
+        {
+          category: string,
+          totalQuestions: number,
+          correctAnswers: number,
+          successRatio: number
+        }
+      ],
+      questions: [             // Individual question results
+        {
+          category: string,
+          questionText: string,
+          inlineHint: string,
+          relatedWords: string[],
+          successOnFirstTry: boolean,
+          attemptsCount: number
+        }
+      ]
+    }
+  ]
+}
+```
+
+**How It Works**:
+1. `TestForm.vue` tracks each question result during test session
+2. On "Finish", complete session data is built with metadata
+3. Session saved to localStorage via `saveTestSession()`
+4. Data can be viewed in browser DevTools → Application → Local Storage
+5. Future features will use this data for analytics and progress tracking
+
+**Related Words Extraction**: Question text is parsed to identify the words being tested (e.g., "What is the plural of 'knjiga'?" → `["knjiga"]`)
+
+### 7. Script Switching (Latin ↔ Cyrillic)
 
 **Feature**: Users can view Serbian content in either Latin or Cyrillic script
 
@@ -360,7 +414,8 @@ serbian-playground/
 │       ├── nounCaseUtils.ts
 │       ├── adjectiveUtils.ts
 │       ├── translatorLogic.ts
-│       └── localizationUtils.ts
+│       ├── localizationUtils.ts
+│       └── testResultsStorage.ts # Test results persistence
 ├── public/                     # Static assets
 │   ├── index.html
 │   └── manifest.json
