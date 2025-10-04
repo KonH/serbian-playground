@@ -349,13 +349,42 @@ Use this final checklist before marking the feature as complete:
 
 ## After Completion
 
-Once all checks pass:
+Once all checks pass and user confirms the solution is acceptable:
 
-1. The feature is ready for manual testing by the maintainer
+### Commit and Push Changes
+
+1. **Stage all changes**:
+   ```bash
+   git add .
+   ```
+
+2. **Commit with descriptive message**:
+   ```bash
+   git commit -m "Implement [feature name]"
+   ```
+   
+   Use a clear, descriptive commit message that summarizes the feature, for example:
+   - `"Implement test results storage in localStorage"`
+   - `"Add conditional mood test category"`
+   - `"Add adjective comparison tests"`
+
+3. **Push to remote branch**:
+   ```bash
+   git push origin pr/feature-name
+   ```
+
+**Important**: Only commit and push after:
+- All quality checks pass (lint, tests, build)
+- User has reviewed and confirmed the solution
+- All checklist items are marked complete
+
+### After Push
+
+1. The feature branch is ready for manual testing by the maintainer
 2. Keep all files in `docs/wip/YYYY_MM_DD_featureName/` for reference
 3. The completed `checklist.md` serves as implementation log
-4. The feature can be deployed by the maintainer when ready
+4. The feature can be merged and deployed by the maintainer when ready
 
 ---
 
-**Remember**: Follow the checklist in `checklist.md` step by step, marking items complete as you go. The feature is done when all items are checked and all quality checks pass!
+**Remember**: Follow the checklist in `checklist.md` step by step, marking items complete as you go. The feature is done when all items are checked, all quality checks pass, and changes are committed and pushed!

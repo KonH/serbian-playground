@@ -137,6 +137,33 @@ The implementation checklist tracks development progress and should be updated a
 - [ ] Commit changes with descriptive message
 ```
 
+### Step 5: Commit Planning Documentation
+
+After creating the feature documentation files and getting user confirmation that the plan is acceptable:
+
+1. **Create feature branch**:
+   ```bash
+   git checkout -b pr/feature-name
+   ```
+   - Use `pr/` prefix for feature branches
+   - Use kebab-case for feature name (e.g., `pr/test-results-storage`)
+
+2. **Add documentation files**:
+   ```bash
+   git add docs/wip/YYYY_MM_DD_featureName/
+   ```
+
+3. **Commit with descriptive message**:
+   ```bash
+   git commit -m "Add feature documentation for [feature name]"
+   ```
+
+**Important**: Only commit planning files after user confirms the plan is acceptable. This ensures:
+- The feature branch starts with approved documentation
+- Planning is tracked in git history
+- Implementation commits can reference the plan
+- Feature documentation is versioned alongside code
+
 ## Example Feature Files
 
 Here are complete examples for reference:
