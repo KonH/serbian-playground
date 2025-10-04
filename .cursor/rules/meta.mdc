@@ -1,0 +1,258 @@
+---
+alwaysApply: false
+---
+
+# Feature Development Preparation Guide
+
+This guide describes the systematic approach for preparing and implementing new features in Serbian Playground.
+
+## Step-by-Step Feature Development Process
+
+### Step 1: Create Feature Directory
+
+Create a new directory in `docs/wip/` using the format: `YYYY_MM_DD_featureName`
+
+**Example**: `docs/wip/2025_10_15_conditionalMoodTest`
+
+**Naming conventions**:
+- Use underscores to separate date components and feature name
+- Use camelCase for the feature name
+- Keep feature name concise but descriptive
+
+### Step 2: Create Feature Files
+
+Inside the feature directory, create two files:
+1. `prompt.md` - Feature description and technical design
+2. `checklist.md` - Implementation checklist (tracks progress)
+
+**Example**: 
+- `docs/wip/2025_10_15_conditionalMoodTest/prompt.md`
+- `docs/wip/2025_10_15_conditionalMoodTest/checklist.md`
+
+### Step 3: Analyze Project Structure
+
+Before filling the prompt file, thoroughly understand the project:
+
+1. **Start with `docs/architecture.md`**
+   - Review relevant architectural sections
+   - Identify affected components and logic modules
+   - Understand data flow implications
+
+2. **Review existing implementations**
+   - Look at similar features for patterns
+   - Check existing test categories and their implementation
+   - Review data structures and interfaces
+
+3. **Consider dependencies**
+   - What CSV data is needed?
+   - Which components will be affected?
+   - What new logic modules are required?
+
+### Step 4: Fill Feature Files
+
+#### The `prompt.md` file should contain:
+
+#### A. Feature Description
+```markdown
+# [Feature Name]
+
+## Overview
+[Brief description of what the feature does and why it's needed]
+
+## User Story
+As a [user type], I want to [action] so that [benefit].
+
+## Requirements
+- Requirement 1
+- Requirement 2
+- ...
+```
+
+#### B. Technical Design
+```markdown
+## Technical Design
+
+### Affected Components
+- Component 1: [description of changes]
+- Component 2: [description of changes]
+
+### New/Modified Logic Modules
+- Module 1: [purpose and key functions]
+- Module 2: [purpose and key functions]
+
+### Data Requirements
+- CSV files needed (new or modified)
+- Data structures and interfaces
+- Localization keys required
+
+### State Management
+- New Vuex state (if any)
+- Actions/mutations needed
+- localStorage considerations
+```
+
+#### The `checklist.md` file should contain:
+
+The implementation checklist tracks development progress and should be updated as you complete each task:
+
+```markdown
+## Implementation Checklist
+
+### Phase 1: Preparation
+- [ ] Create feature branch (if using git workflow)
+- [ ] Define TypeScript interfaces for new data structures
+- [ ] Create/update CSV data files
+- [ ] Add localization keys to `src/assets/localization.csv`
+
+### Phase 2: Core Implementation
+- [ ] Step 1: [specific implementation step]
+- [ ] Step 2: [specific implementation step]
+- [ ] Step 3: [specific implementation step]
+- [ ] ...
+
+### Phase 3: Testing
+- [ ] Write unit tests for new logic modules
+- [ ] Update existing tests if behavior changed
+- [ ] Ensure all tests pass: `npm test`
+
+### Phase 4: Documentation
+- [ ] Update `docs/architecture.md` (if architectural changes made)
+  - [ ] Update test categories list (if new test added)
+  - [ ] Update component list (if new components added)
+  - [ ] Update data layer documentation (if CSV added)
+  - [ ] Update relevant sections
+- [ ] Add new version to `docs/version-history.md` (at the end of file)
+  - Version format: `## X.XX`
+  - Entry format: `- [Feature Name] [docs/wip/YYYY_MM_DD_featureName/prompt.md]`
+- [ ] Update `src/store.ts` version number
+
+### Phase 5: Quality Assurance
+- [ ] Run linter: `npm run lint`
+- [ ] Fix any linting errors
+- [ ] Run all tests: `npm test`
+- [ ] Build successfully: `npm run build`
+- [ ] Test built version in `dist/`
+
+### Phase 6: Deployment
+- [ ] Commit changes with descriptive message
+```
+
+## Example Feature Files
+
+Here are complete examples for reference:
+
+### Example `prompt.md`:
+
+```markdown
+# Conditional Mood Test
+
+## Overview
+Add a new test category for Serbian conditional mood (conditional sentences with "bi").
+
+## User Story
+As a Serbian language learner, I want to practice conditional mood conjugation so that I can form conditional sentences correctly.
+
+## Requirements
+- Support all person forms (ja, ti, on/ona/ono, mi, vi, oni/one/ona)
+- Include 20+ common verbs with conditional forms
+- Follow existing test pattern (question + 4 answer options)
+- Support both Latin and Cyrillic scripts
+
+## Technical Design
+
+### Affected Components
+- No component changes needed (uses existing GenericTest system)
+
+### New/Modified Logic Modules
+- Create `src/logic/conditionalMoodUtils.ts`
+  - `loadConditionalVerbs(csv: string, output: ConditionalVerbDef[])`
+  - `createConditionalMoodMapping(verbs: ConditionalVerbDef[]): TestEntry`
+
+### Data Requirements
+- New CSV: `src/assets/conditional-verbs.csv`
+  - Columns: verb, ja_form, ti_form, on_form, mi_form, vi_form, oni_form
+- TypeScript interface: `ConditionalVerbDef`
+- Localization keys:
+  - `ConditionalMoodTest` (in all 4 languages)
+
+### State Management
+- Add `'ConditionalMoodTest'` to `AllTestCategories` in `src/store.ts`
+```
+
+### Example `checklist.md`:
+
+```markdown
+# Implementation Checklist: Conditional Mood Test
+
+### Phase 1: Preparation
+- [ ] Create feature branch
+- [ ] Define `ConditionalVerbDef` interface
+- [ ] Create `src/assets/conditional-verbs.csv` with 20+ verbs
+- [ ] Add localization for `ConditionalMoodTest` in all languages
+
+### Phase 2: Core Implementation
+- [ ] Create `src/logic/conditionalMoodUtils.ts`
+- [ ] Implement `loadConditionalVerbs` function
+- [ ] Implement `createConditionalMoodMapping` function
+- [ ] Add `ConditionalMoodTest` to `AllTestCategories` in store.ts
+- [ ] Add case in `genericTestUtils.ts` to handle new category
+
+### Phase 3: Testing
+- [ ] Create `src/logic/conditionalMoodUtils.test.ts`
+- [ ] Test verb loading from CSV
+- [ ] Test correct form generation
+- [ ] Ensure all tests pass: `npm test`
+
+### Phase 4: Documentation
+- [ ] Update `docs/architecture.md`
+  - [ ] Add ConditionalMoodTest to test categories list (section 3)
+  - [ ] Add conditionalMoodUtils.ts to logic modules (section 3)
+  - [ ] Add conditional-verbs.csv to data files (section 4)
+- [ ] Add new version to `docs/version-history.md`
+  - `## 0.30`
+  - `- Conditional Mood Test [docs/wip/2025_10_15_conditionalMoodTest/prompt.md]`
+- [ ] Update version in `src/store.ts` to `'0.30'`
+
+### Phase 5: Quality Assurance
+- [ ] npm run lint
+- [ ] npm test
+- [ ] npm run build
+```
+
+## Best Practices
+
+### During Planning (Steps 1-4)
+1. **Be thorough**: Don't skip the analysis phase
+2. **Check existing patterns**: Look at similar features first
+3. **Plan for all languages**: Remember the app supports 4 languages
+4. **Consider both scripts**: Latin and Cyrillic must both work
+
+### During Implementation
+1. **Follow the checklist**: Check off items in `checklist.md` as you complete them
+2. **Update prompt.md**: If you discover new requirements, add them
+3. **Test incrementally**: Run tests as you implement each module
+4. **Document as you go**: Update architecture.md alongside code changes
+
+### Before Marking Complete
+1. **All checklist items completed**: No unchecked boxes should remain in `checklist.md`
+2. **Documentation updated**: Architecture and version history reflect changes
+3. **Tests pass**: All automated tests green
+4. **Build succeeds**: `npm run build` completes without errors
+
+## After Feature Completion
+
+Once the feature is implemented and all checks pass:
+
+1. Keep the `docs/wip/YYYY_MM_DD_featureName/` directory as historical reference
+2. The `prompt.md` serves as documentation for the feature design
+3. The `checklist.md` shows what was implemented
+4. Future similar features can reference these as templates
+
+## Notes
+
+- The `docs/wip/` directory is for "work in progress" documentation
+- Each feature gets its own timestamped directory for clarity
+- The `prompt.md` file documents the feature design and requirements
+- The `checklist.md` file tracks implementation progress
+- Always link to prompt files from version-history.md for traceability
+- Manual testing and deployment are handled separately by the maintainer

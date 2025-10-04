@@ -1,0 +1,12 @@
+# Work In Progress Documentation
+
+This directory contains feature development documentation organized by date and feature name.
+
+Each subdirectory follows the format: `YYYY_MM_DD_featureName`
+
+Each feature directory contains:
+- `prompt.md` - Feature description, requirements, and technical design
+- `checklist.md` - Implementation checklist (updated during development)
+
+See `.cursor/rules/meta.mdc` for the complete feature development guide.
+

@@ -1,0 +1,454 @@
+---
+alwaysApply: true
+---
+
+# Serbian Playground Development Guide
+
+## Start Here
+
+📘 **First time working on this project?** Read `docs/architecture.md` for comprehensive architecture overview, tech stack details, and design decisions.
+
+🛠️ **Developing a new feature?**
+- **Planning**: Use `.cursor/rules/meta.mdc` guide to prepare feature documentation
+- **Implementation**: Use `.cursor/rules/dev.mdc` guide to develop the feature
+
+## Project Overview
+
+This is a Vue 3 + TypeScript Progressive Web App for learning Serbian language through interactive grammar tests and script translation (Latin ↔ Cyrillic).
+
+## Core Development Principles
+
+### 1. Type Safety First
+- **Always use TypeScript** for new files
+- **Define interfaces** for data structures before implementation
+- **Avoid `any` type** - use proper types or `unknown` with type guards
+- **Type CSV row structures** when adding new data sources
+
+Example:
+```typescript
+interface NounRow {
+  word: string;
+  gender: 'm' | 'f' | 'n';
+  plural: string;
+  // ... other fields
+}
+```
+
+### 2. Component Development
+
+#### State-Based Navigation
+- **Do NOT use Vue Router** - this project uses Vuex state for navigation
+- Navigate by updating `appState` in the store: `updateAppState('mainMenu')`
+- Add new screens in `src/components/index.ts` state mapping
+
+#### Component Guidelines
+- Use **Composition API** (`setup()`) for new components
+- Use **`defineComponent`** for proper TypeScript inference
+- Use **`useI18n()`** hook for translations, not direct imports
+- Use **Vuex mapGetters/mapActions** for store access
+- Use **async components** for code splitting (already set up in `index.ts`)
+
+#### Props Pattern
+```typescript
+props: {
+  mapping: {
+    type: Object as () => TestEntry,
+    required: true
+  }
+}
+```
+
+### 3. Business Logic
+
+#### Separation of Concerns
+- **Keep logic out of components** - place in `src/logic/` modules
+- **Pure functions preferred** - easier to test and reason about
+- **Single Responsibility** - one utility file per grammar concept
+
+#### Test Entry Pattern
+All test categories must conform to `TestEntry` interface:
+```typescript
+TestEntry = {
+  questions: {
+    [key: string]: {
+      category?: TestCategory,
+      question: string,
+      inlineHint: string,
+      answers: { [answer: string]: boolean }
+    }
+  }
+}
+```
+
+#### Adding New Test Category
+
+**Step-by-step:**
+
+1. **Define category** in `src/store.ts`:
+   ```typescript
+   export const AllTestCategories = [
+     // ... existing
+     'NewGrammarTest'
+   ] as const;
+   ```
+
+2. **Create utility module** `src/logic/newGrammarUtils.ts`:
+   ```typescript
+   import { TestEntry } from './TestEntry';
+   
+   export function createNewGrammarMapping(data: DataType[]): TestEntry {
+     const result: TestEntry = { questions: {} };
+     // Generate questions and answers
+     return result;
+   }
+   ```
+
+3. **Register in factory** `src/logic/genericTestUtils.ts`:
+   ```typescript
+   case 'NewGrammarTest':
+     add(mapping, createNewGrammarMapping(data), category);
+     break;
+   ```
+
+4. **Add translations** in `src/assets/localization.csv`:
+   ```csv
+   key,en,ru,sr-Latn,sr-Cyrl
+   NewGrammarTest,New Grammar,Новая грамматика,Nova gramatika,Нова граматика
+   ```
+
+5. **Write tests** in `src/logic/newGrammarUtils.test.ts`:
+   ```typescript
+   describe('createNewGrammarMapping', () => {
+     it('should generate correct forms', () => {
+       // Test implementation
+     });
+   });
+   ```
+
+### 4. Data Management
+
+#### CSV Data
+- **CSV files live in** `src/assets/`
+- **Import with raw-loader**: `import csv from '!!raw-loader!@/assets/file.csv'`
+- **Parse with PapaCSV**: Use `Papa.parse<RowType>(csv, { header: true, ... })`
+- **Define row type interface** before parsing
+
+#### Localization
+- **All user-facing text** must be in `localization.csv`
+- **Key naming convention**: `PascalCase` for UI elements, `lowercase_underscore` for data
+- **Support all 4 languages**: en, ru, sr-Latn, sr-Cyrl
+- **Access in components**: `translate('KeyName')` via `useI18n()`
+
+#### Adding New CSV Data Source
+
+1. Create CSV in `src/assets/newdata.csv`
+2. Define TypeScript interface for row structure
+3. Create loader function:
+   ```typescript
+   import Papa from 'papaparse';
+   import csv from '!!raw-loader!@/assets/newdata.csv';
+   
+   type NewDataRow = { field1: string; field2: number; };
+   
+   export function loadNewData(output: NewDataType[]) {
+     Papa.parse<NewDataRow>(csv, {
+       header: true,
+       complete: (results) => {
+         for (const row of results.data) {
+           output.push({ /* map to NewDataType */ });
+         }
+       }
+     });
+   }
+   ```
+
+### 5. State Management (Vuex)
+
+#### Store Usage
+- **Read state**: Use `mapGetters(['stateName'])` in components
+- **Modify state**: Use `mapActions(['updateStateName'])` in components
+- **Never mutate state directly** - always use actions → mutations
+
+#### Persistence
+- Use `localStorage` for user preferences (langStyle, selectedTestCategories, appLocale)
+- Implement in mutations:
+  ```typescript
+  mutations: {
+    setSetting(state, value) {
+      state.setting = value;
+      localStorage.setItem('settingKey', value);
+    }
+  }
+  ```
+- Load in store initialization
+
+### 6. Script Handling (Latin/Cyrillic)
+
+#### When to Convert
+- **In components**: Use computed properties that apply `latinToCyrillic()` based on `langStyle`
+- **In logic**: Keep data in Latin, convert at display time
+- **User input**: Accept both scripts, normalize to Latin internally if needed
+
+#### Conversion Functions
+```typescript
+import { latinToCyrillic, cyrillicToLatin } from '@/logic/translatorLogic';
+
+computed: {
+  displayText() {
+    return this.langStyle === 'cyrillic' 
+      ? latinToCyrillic(this.text)
+      : this.text;
+  }
+}
+```
+
+### 7. Testing
+
+#### What to Test
+- **Grammar rules** - Ensure linguistic correctness (plural forms, conjugations, cases)
+- **Data loading** - CSV parsing produces expected objects
+- **Answer validation** - Correct answers are marked as correct
+- **Edge cases** - Unusual word forms, special characters
+
+#### Testing Pattern
+```typescript
+import fs from 'fs';
+import path from 'path';
+
+function loadLocalData(): DataType[] {
+  const data: DataType[] = [];
+  const csvPath = path.join(__dirname, '..', 'assets', 'data.csv');
+  const csvContent = fs.readFileSync(csvPath, 'utf8');
+  loadData(csvContent, data);
+  return data;
+}
+
+describe('createMapping', () => {
+  it('should generate correct forms for specific case', () => {
+    const data = loadLocalData();
+    const result = createMapping(data);
+    
+    expect(result.questions).toHaveProperty('question_key');
+    expect(result.questions['question_key'].answers['correct_answer']).toBe(true);
+  });
+});
+```
+
+#### Running Tests
+```bash
+npm run test          # Run once
+npm run test:watch    # Watch mode
+npm run serve         # Dev server + tests in watch mode
+```
+
+### 8. Styling
+
+#### Bootstrap Usage
+- Use **Bootstrap 5 classes** for layout and spacing
+- Use **Bootstrap-Vue-3 components** (`<b-button>`, etc.)
+- **Scoped styles** in component `<style scoped>` sections
+- **Responsive design** - test on mobile (menu is used on phones)
+
+#### Custom Styles
+```vue
+<style scoped>
+.custom-class {
+  /* Component-specific styles */
+}
+
+@media (max-width: 600px) {
+  /* Mobile adjustments */
+}
+</style>
+```
+
+### 9. Code Quality
+
+#### Linting
+- Run `npm run lint` before committing
+- Fix auto-fixable issues: `npm run lint -- --fix`
+- Follow ESLint + Vue + TypeScript rules
+
+#### Naming Conventions
+- **Components**: PascalCase (e.g., `MainMenu.vue`)
+- **Files**: camelCase for logic (e.g., `verbConjugationUtils.ts`)
+- **Functions**: camelCase (e.g., `createNounMapping`)
+- **Types/Interfaces**: PascalCase (e.g., `TestEntry`, `NounDef`)
+- **Constants**: UPPER_SNAKE_CASE or camelCase for objects
+
+#### Comments
+- **Document WHY, not WHAT** - code should be self-explanatory
+- **Complex grammar rules** - explain linguistic reasoning
+- **Public functions** - JSDoc comments for exported utilities
+
+### 10. Performance
+
+#### Bundle Size
+- **Async components** already implemented - maintain this pattern
+- **Limit answer options** to 4 per question (reduce rendering work)
+- **Avoid large inline data** - use CSV files
+
+#### Runtime
+- **Memoize expensive computations** if needed (currently not an issue)
+- **Lazy test generation** - don't generate all questions upfront
+- **Shuffle arrays in place** when possible
+
+### 11. PWA Considerations
+
+- **Service worker** handles caching automatically
+- **Manifest** defines app metadata
+- **Test offline functionality** after building
+- **Keep bundle under 1MB** for reasonable cache size
+
+## Common Patterns
+
+### Accessing Translations
+```typescript
+// In setup()
+const i18n = useI18n();
+const translate = i18n.t;
+
+// In template
+{{ translate('KeyName') }}
+
+// For dynamic keys
+translate(`prefix_${variable}`)
+```
+
+### Navigation
+```typescript
+// In component methods
+methods: {
+  ...mapActions(['updateAppState']),
+  
+  goToMenu() {
+    this.updateAppState('mainMenu');
+  }
+}
+```
+
+### Loading CSV Data
+```typescript
+import Papa from 'papaparse';
+
+function loadData(csv: string, output: DataType[]) {
+  Papa.parse<RowType>(csv, {
+    header: true,
+    complete: (results) => {
+      for (const row of results.data) {
+        // Transform and push to output
+      }
+    }
+  });
+}
+```
+
+## Troubleshooting
+
+### TypeScript Errors in .vue Files
+- Ensure `shims-vue.d.ts` exists
+- Check `tsconfig.json` includes `.vue` files
+- Restart TypeScript server in IDE
+
+### CSV Not Loading
+- Check raw-loader syntax: `!!raw-loader!@/assets/file.csv`
+- Verify CSV file exists and is in `src/assets/`
+- Check for BOM or encoding issues
+
+### Tests Failing
+- Ensure CSV files accessible with `fs` module in tests
+- Use correct path: `path.join(__dirname, '..', 'assets', 'file.csv')`
+- Check Jest configuration in `jest.config.js`
+
+### State Not Persisting
+- Check localStorage key naming consistency
+- Verify load function called in store initialization
+- Test in incognito mode to rule out localStorage issues
+
+## Best Practices Checklist
+
+Before submitting changes:
+
+- [ ] TypeScript types defined for new data structures
+- [ ] All user-facing text in `localization.csv` (4 languages)
+- [ ] Tests written for new grammar rules
+- [ ] Components use Composition API where possible
+- [ ] State updates go through Vuex actions
+- [ ] Script conversion applied in computed properties
+- [ ] Responsive design tested on mobile viewport
+- [ ] Linting passes (`npm run lint`)
+- [ ] Tests pass (`npm test`)
+- [ ] Build succeeds (`npm run build`)
+
+## Useful Commands
+
+```bash
+# Development with tests
+npm run serve
+
+# Run tests only
+npm test
+npm run test:watch
+
+# Build for production
+npm run build
+
+# Lint and fix
+npm run lint
+
+# Deploy (requires sibling konh.github.io repo)
+npm run deploy
+
+# Convert verbs CSV format (if needed)
+npm run convert_verbs
+```
+
+## Understanding External Libraries
+
+When you need to understand how to use external libraries in this project, use **context7 MCP** to get up-to-date documentation:
+
+### How to Use Context7
+
+1. **For library usage questions**: Request documentation using context7
+   - Example: "Use context7 to get Vue 3 Composition API documentation"
+   - Example: "Look up Vuex 4 TypeScript usage with context7"
+
+2. **Common libraries in this project**:
+   - Vue 3 (Composition API, defineComponent, computed, ref, reactive)
+   - Vuex 4 (store, mapGetters, mapActions, mutations)
+   - Vue I18n (useI18n, translation setup)
+   - Bootstrap-Vue-3 (component usage)
+   - PapaCSV (CSV parsing with TypeScript)
+
+3. **When to use context7**:
+   - Need to understand API changes or best practices
+   - TypeScript integration with libraries
+   - Looking for specific features or methods
+   - Debugging library-specific issues
+
+### Example Workflow
+
+```typescript
+// Need to understand proper Vue 3 Composition API pattern?
+// → Ask: "Use context7 to get Vue 3 Composition API with TypeScript"
+
+// Need to know how to use Vuex 4 with TypeScript?
+// → Ask: "Use context7 to get Vuex 4 TypeScript store typing"
+```
+
+## Resources
+
+- **Architecture Documentation**: `docs/architecture.md` (read this first!)
+- **Vue 3 Docs**: https://vuejs.org/guide/
+- **TypeScript Docs**: https://www.typescriptlang.org/docs/
+- **Bootstrap 5**: https://getbootstrap.com/docs/5.3/
+- **Vuex 4**: https://vuex.vuejs.org/
+- **Vue I18n**: https://vue-i18n.intlify.dev/
+
+## Contact
+
+For questions about Serbian grammar rules or linguistic accuracy, consult native speakers or reference Serbian grammar resources.
+
+---
+
+**Remember**: Start with `docs/architecture.md` to understand the big picture before diving into code!

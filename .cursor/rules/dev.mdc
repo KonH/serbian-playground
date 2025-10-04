@@ -1,0 +1,361 @@
+---
+alwaysApply: false
+---
+
+# Feature Development Guide
+
+This guide explains how to develop features based on prepared feature documentation.
+
+## Overview
+
+**Input**: `prompt.md` file in `docs/wip/YYYY_MM_DD_featureName/` directory (created according to `meta.mdc`)
+
+**Output**: Implemented feature + completed `checklist.md`
+
+**Definition of Done**: 
+- All code changes implemented
+- All checklist items in `checklist.md` checked off
+- All tests passing
+- Build successful
+
+## Prerequisites
+
+Before starting development, ensure:
+
+1. ✅ Feature directory exists: `docs/wip/YYYY_MM_DD_featureName/`
+2. ✅ `prompt.md` contains complete feature specification
+3. ✅ `checklist.md` contains implementation checklist
+4. ✅ You've read and understood `docs/architecture.md`
+
+## Development Process
+
+### Step 1: Review Feature Documentation
+
+Read the `prompt.md` file thoroughly to understand:
+
+- **Feature Overview**: What the feature does and why
+- **Requirements**: Specific functional requirements
+- **Technical Design**: Architecture decisions and implementation approach
+- **Affected Components**: Which parts of the codebase will change
+- **Data Requirements**: CSV files, interfaces, localization needs
+
+### Step 2: Follow the Checklist
+
+Open `checklist.md` and work through each phase systematically. **Mark items as completed** using `[x]` as you finish them.
+
+#### Phase 1: Preparation
+
+**Focus**: Set up data structures and resources
+
+Tasks typically include:
+- Define TypeScript interfaces for new data types
+- Create or update CSV data files in `src/assets/`
+- Add localization keys to `src/assets/localization.csv` (all 4 languages)
+
+**Example**:
+```typescript
+// Define interface first
+export type NewDataDef = {
+  word: string;
+  property: string;
+};
+```
+
+#### Phase 2: Core Implementation
+
+**Focus**: Implement the main feature logic
+
+Tasks typically include:
+- Create new logic modules in `src/logic/`
+- Implement data loading functions
+- Implement mapping/generation functions
+- Update `src/store.ts` if adding new test category
+- Update `src/logic/genericTestUtils.ts` to integrate new test
+
+**Key Principles**:
+- Keep logic separate from components
+- Use pure functions when possible
+- Follow existing patterns in the codebase
+- Apply TypeScript types strictly
+
+**Example Flow for New Test Category**:
+1. Create `src/logic/newTestUtils.ts`
+2. Implement `loadNewData()` function
+3. Implement `createNewTestMapping()` function
+4. Add category to `AllTestCategories` in `store.ts`
+5. Add case in `genericTestUtils.ts`
+
+#### Phase 3: Testing
+
+**Focus**: Ensure correctness through automated tests
+
+Tasks typically include:
+- Create test file: `src/logic/newTestUtils.test.ts`
+- Write tests for data loading
+- Write tests for correct answer generation
+- Verify edge cases
+- Run `npm test` to ensure all tests pass
+
+**Testing Pattern**:
+```typescript
+import fs from 'fs';
+import path from 'path';
+
+function loadLocalData(): DataType[] {
+  const csvPath = path.join(__dirname, '..', 'assets', 'data.csv');
+  const csvContent = fs.readFileSync(csvPath, 'utf8');
+  const data: DataType[] = [];
+  loadData(csvContent, data);
+  return data;
+}
+
+describe('createMapping', () => {
+  it('should generate correct forms', () => {
+    const data = loadLocalData();
+    const result = createMapping(data);
+    expect(result.questions['test_key'].answers['correct_answer']).toBe(true);
+  });
+});
+```
+
+#### Phase 4: Documentation
+
+**Focus**: Update project documentation to reflect changes
+
+Tasks typically include:
+- Update `docs/architecture.md` if architectural changes made:
+  - Add to test categories list (section 3)
+  - Add to logic modules list (section 3)
+  - Add to CSV data files list (section 4)
+  - Update any other relevant sections
+- Add new version entry to `docs/version-history.md` (at the end):
+  - Format: `## X.XX`
+  - Entry: `- [Feature Name] [docs/wip/YYYY_MM_DD_featureName/prompt.md]`
+- Update version number in `src/store.ts`
+
+**Version History Example**:
+```markdown
+## 0.30
+- Conditional Mood Test [docs/wip/2025_10_15_conditionalMoodTest/prompt.md]
+```
+
+#### Phase 5: Quality Assurance
+
+**Focus**: Ensure code quality and build success
+
+Tasks:
+1. **Run linter**: `npm run lint`
+   - Fix any linting errors reported
+   - Use `npm run lint -- --fix` for auto-fixable issues
+2. **Run all tests**: `npm test`
+   - All tests must pass (green)
+   - Fix any failing tests
+3. **Build project**: `npm run build`
+   - Build must complete successfully
+   - Check for any warnings or errors
+
+### Step 3: Verify Completion
+
+Before considering the feature complete, verify:
+
+- [ ] All items in `checklist.md` are checked off `[x]`
+- [ ] No linting errors: `npm run lint` passes
+- [ ] All tests pass: `npm test` shows all green
+- [ ] Build succeeds: `npm run build` completes without errors
+- [ ] `docs/architecture.md` updated (if needed)
+- [ ] `docs/version-history.md` has new version entry
+- [ ] `src/store.ts` has updated version number
+
+## Common Patterns
+
+### Adding a New Test Category
+
+1. **Define category type** in `src/store.ts`:
+```typescript
+export const AllTestCategories = [
+  // ... existing
+  'NewTestCategory'
+] as const;
+```
+
+2. **Create utility module** `src/logic/newTestUtils.ts`:
+```typescript
+import { TestEntry } from './TestEntry';
+import Papa from 'papaparse';
+
+type NewTestRow = {
+  field1: string;
+  field2: string;
+};
+
+export type NewTestDef = {
+  field1: string;
+  field2: string;
+};
+
+export function loadNewTestData(csv: string, output: NewTestDef[]) {
+  Papa.parse<NewTestRow>(csv, {
+    header: true,
+    complete: (results) => {
+      for (const row of results.data) {
+        output.push({
+          field1: row.field1.trim(),
+          field2: row.field2.trim()
+        });
+      }
+    }
+  });
+}
+
+export function createNewTestMapping(data: NewTestDef[]): TestEntry {
+  const result: TestEntry = { questions: {} };
+  // Implementation
+  return result;
+}
+```
+
+3. **Add to generic test factory** in `src/logic/genericTestUtils.ts`:
+```typescript
+import newTestCsv from '!!raw-loader!@/assets/newtest.csv';
+import { createNewTestMapping, loadNewTestData, NewTestDef } from './newTestUtils';
+
+// In createGenericMappingForCategories function:
+const newTestData: NewTestDef[] = [];
+loadNewTestData(newTestCsv, newTestData);
+
+// In switch statement:
+case 'NewTestCategory':
+  add(mapping, createNewTestMapping(newTestData), category);
+  break;
+```
+
+4. **Add localization** in `src/assets/localization.csv`:
+```csv
+NewTestCategory,New Test,Новый тест,Novi test,Нови тест
+```
+
+5. **Write tests** in `src/logic/newTestUtils.test.ts`
+
+### Adding CSV Data
+
+1. **Create CSV file**: `src/assets/data.csv`
+2. **Define row interface**: TypeScript type for CSV structure
+3. **Create loader function**: Uses PapaCSV to parse
+4. **Import with raw-loader**: `import csv from '!!raw-loader!@/assets/data.csv'`
+
+### Working with Localization
+
+All user-facing text must be in `localization.csv`:
+
+```csv
+key,en,ru,sr-Latn,sr-Cyrl
+MyNewKey,English,Русский,Srpski,Српски
+```
+
+Access in code:
+```typescript
+const i18n = useI18n();
+const translate = i18n.t;
+translate('MyNewKey'); // Returns localized string
+```
+
+### Handling Latin/Cyrillic Scripts
+
+Data is stored in Latin, converted at display time:
+
+```typescript
+import { latinToCyrillic } from '@/logic/translatorLogic';
+
+computed: {
+  displayText() {
+    return this.langStyle === 'cyrillic' 
+      ? latinToCyrillic(this.text)
+      : this.text;
+  }
+}
+```
+
+## Troubleshooting
+
+### TypeScript Errors
+
+- Ensure all interfaces are properly defined
+- Check imports are correct
+- Use proper type assertions for CSV parsing
+- Run `tsc --noEmit` to check types without building
+
+### Tests Failing
+
+- Verify CSV files are in correct location
+- Check file paths in tests use `path.join(__dirname, '..', 'assets', 'file.csv')`
+- Ensure test data matches expected format
+- Run tests in watch mode: `npm run test:watch`
+
+### Linting Errors
+
+- Run `npm run lint` to see all errors
+- Use `npm run lint -- --fix` for auto-fixes
+- Check for unused variables, imports
+- Ensure proper formatting
+
+### Build Errors
+
+- Check all imports are valid
+- Verify CSV files exist and raw-loader syntax is correct
+- Look for TypeScript type errors
+- Check webpack configuration in `vue.config.js`
+
+## Best Practices
+
+### During Development
+
+1. **Work incrementally**: Implement one phase at a time
+2. **Check off items**: Update `checklist.md` as you progress
+3. **Test frequently**: Run tests after each major change
+4. **Follow patterns**: Look at similar existing code for guidance
+5. **Keep types strict**: Don't use `any`, define proper interfaces
+
+### Code Quality
+
+1. **Separation of concerns**: Logic in `src/logic/`, UI in `src/components/`
+2. **Pure functions**: Prefer functions without side effects
+3. **Type safety**: Define interfaces before implementation
+4. **Consistent naming**: Follow project conventions (camelCase for functions, PascalCase for types)
+5. **Comments for "why"**: Explain complex logic, especially grammar rules
+
+### Before Completion
+
+1. **Review checklist**: Every item should be `[x]`
+2. **Run all checks**: lint, test, build - all must pass
+3. **Update documentation**: Architecture and version history current
+4. **Verify version bump**: Store version matches version history
+
+## Definition of Done Checklist
+
+Use this final checklist before marking the feature as complete:
+
+- [ ] All files created/modified as specified in `prompt.md`
+- [ ] All items in `checklist.md` marked complete `[x]`
+- [ ] TypeScript interfaces defined for all new data structures
+- [ ] All localization keys added (4 languages)
+- [ ] Unit tests written and passing
+- [ ] `npm run lint` passes with no errors
+- [ ] `npm test` passes with all tests green
+- [ ] `npm run build` completes successfully
+- [ ] `docs/architecture.md` updated (if architectural changes made)
+- [ ] `docs/version-history.md` has new version entry with link to prompt.md
+- [ ] `src/store.ts` version number updated
+- [ ] No console errors or warnings in build output
+
+## After Completion
+
+Once all checks pass:
+
+1. The feature is ready for manual testing by the maintainer
+2. Keep all files in `docs/wip/YYYY_MM_DD_featureName/` for reference
+3. The completed `checklist.md` serves as implementation log
+4. The feature can be deployed by the maintainer when ready
+
+---
+
+**Remember**: Follow the checklist in `checklist.md` step by step, marking items complete as you go. The feature is done when all items are checked and all quality checks pass!
